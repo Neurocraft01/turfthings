@@ -552,7 +552,7 @@ export default function Home() {
                   <div className="relative z-[1] flex justify-between items-center sm:block">
                     <span className="block sm:hidden text-[12px] text-muted dark:text-white/60 font-light tracking-[.02em] transition-colors duration-300">Price per hour</span>
                     <div className="text-right">
-                      <div className="font-display leading-none sm:min-w-[140px] text-foreground dark:text-white transition-colors duration-300" style={{ fontSize: "44px", sm: { fontSize: "52px" }, letterSpacing: ".01em" }}>
+                      <div className="font-display leading-none sm:min-w-[140px] text-foreground dark:text-white transition-colors duration-300 text-[44px] sm:text-[52px]" style={{ letterSpacing: ".01em" }}>
                         {rate.price}
                       </div>
                       <span className="hidden sm:block text-[12px] text-muted dark:text-white/60 font-light mt-1 tracking-[.02em] transition-colors duration-300">

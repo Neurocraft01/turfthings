@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // We use a simple client-side auth for the demo, 
   // but this is where a real NextAuth or JWT token check would happen.
   // Since we rely on localStorage for the mock auth which isn't available in middleware,
