@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     });
 
     // Check for overlap
-    const hasConflict = existingBookings.some((b) => {
+    const hasConflict = existingBookings.some((b: any) => {
       const bStart = timeToMinutes(b.slotStart);
       const bEnd = timeToMinutes(b.slotEnd);
       // Overlap condition: (StartA < EndB) and (EndA > StartB)

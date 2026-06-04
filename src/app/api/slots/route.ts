@@ -42,7 +42,7 @@ export async function GET(request: Request) {
       const slotEndMins = slotStartMins + 60;
 
       // Check if this specific 30-min block falls within any existing booking
-      const isBooked = bookings.some((b) => {
+      const isBooked = bookings.some((b: any) => {
         const bStart = timeToMinutes(b.slotStart);
         const bEnd = timeToMinutes(b.slotEnd);
         // Overlap: slotStart < bEnd AND slotEnd > bStart
