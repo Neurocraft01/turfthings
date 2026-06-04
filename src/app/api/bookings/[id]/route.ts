@@ -52,7 +52,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         }
       });
 
-      const hasConflict = existingBookings.some((b) => {
+      const hasConflict = existingBookings.some((b: any) => {
         const bStart = timeToMinutes(b.slotStart);
         const bEnd = timeToMinutes(b.slotEnd);
         // We only check if the new extended period overlaps (currentEndMins to newEndMins)
