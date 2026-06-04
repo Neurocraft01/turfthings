@@ -108,6 +108,8 @@ function RateIcon({ period }: { period: string }) {
   const cls = "w-6 h-6";
   if (period === "Morning") return <Sun className={cls} strokeWidth={1.5} />;
   if (period === "Afternoon") return <Cloud className={cls} strokeWidth={1.5} />;
+  if (period === "Evening") return <Moon className={cls} strokeWidth={1.5} />;
+  if (period === "Late Night") return <Clock className={cls} strokeWidth={1.5} />;
   return <Moon className={cls} strokeWidth={1.5} />;
 }
 
@@ -125,6 +127,24 @@ function Stars({ count = 5 }: { count?: number }) {
 /* ═══════════════════════════════════════════════════════ */
 export default function Home() {
   const [dayMode, setDayMode] = useState<"week" | "wend">("week");
+  const [dynReviews, setDynReviews] = useState<any[]>([]);
+  const [dynGallery, setDynGallery] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await fetch("/api/content");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.reviews && data.reviews.length > 0) setDynReviews(data.reviews);
+          if (data.gallery && data.gallery.length > 0) setDynGallery(data.gallery);
+        }
+      } catch (err) {
+        console.error("Failed to fetch content:", err);
+      }
+    };
+    fetchContent();
+  }, []);
 
   /* Cursor dot */
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -159,15 +179,17 @@ export default function Home() {
   }, []);
 
   const weekdayRates = [
-    { period: "Morning",   time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "75%" },
-    { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400", pct: "50%" },
-    { period: "Evening",   time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800", pct: "100%" },
+    { period: "Morning",   time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "60%" },
+    { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400", pct: "40%" },
+    { period: "Evening",   time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800", pct: "80%" },
+    { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours",  price: "₹1000", pct: "100%" },
   ];
 
   const weekendRates = [
-    { period: "Morning",   time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "75%" },
-    { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400", pct: "50%" },
-    { period: "Evening",   time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800", pct: "100%" },
+    { period: "Morning",   time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "60%" },
+    { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400", pct: "40%" },
+    { period: "Evening",   time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800", pct: "80%" },
+    { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours",  price: "₹1000", pct: "100%" },
   ];
 
   const rates = dayMode === "week" ? weekdayRates : weekendRates;
@@ -487,43 +509,32 @@ export default function Home() {
           <Reveal delay={200}>
             <div className="mb-10 md:mb-14">
               <div className="text-[10px] tracking-[0.14em] uppercase text-muted dark:text-white/60 font-medium mb-4 transition-colors duration-300">
-                Daily schedule — 5 AM to midnight
+                Daily schedule — 24 hours
               </div>
               <div className="flex flex-col sm:flex-row rounded-2xl overflow-hidden border border-black/8 dark:border-white/10 transition-colors duration-300">
                 {[
                   { flex: 7, bgClass: "bg-[#fffbf0] dark:bg-white/5", Icon: Sun,   price: rates[0].price, time: "5AM–12PM",  label: "Morning" },
                   { flex: 5, bgClass: "bg-[#f7f7f5] dark:bg-transparent", Icon: Cloud, price: rates[1].price, time: "12PM–5PM", label: "Afternoon" },
                   { flex: 7, bgClass: "bg-white dark:bg-white/5", Icon: Moon,  price: rates[2].price, time: "5PM–12AM", label: "Evening"  },
-                  { flex: 1, bgClass: "bg-[#edf7f1] dark:bg-brand/20", Icon: Phone, price: "",     time: "Late",      label: "", late: true },
+                  { flex: 5, bgClass: "bg-[#edf7f1] dark:bg-white/5", Icon: Clock, price: rates[3].price, time: "12AM–5AM", label: "Late Night" },
                 ].map((seg, i) => (
                   <div
                     key={i}
                     className={`flex flex-col justify-center items-center transition-all duration-500 gap-1 py-5 sm:py-0 sm:h-[72px] ${seg.bgClass}`}
                     style={{ flex: seg.flex }}
                   >
-                    {!seg.late ? (
-                      <>
-                        <div className="flex items-center gap-1.5 mb-1 sm:mb-0">
-                          <seg.Icon size={14} strokeWidth={1.8} className="text-brand" />
-                          <span className="text-[9px] tracking-[.08em] uppercase font-medium text-muted dark:text-white/60 transition-colors duration-300">
-                            {seg.time}
-                          </span>
-                        </div>
-                        <span key={seg.price + dayMode} className="font-display text-[26px] leading-none tracking-[.02em] text-foreground dark:text-white transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
-                          {seg.price}
-                        </span>
-                        <span className="text-[10px] hidden sm:block text-muted dark:text-white/60 transition-colors duration-300">
-                          {seg.label}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <Phone size={14} strokeWidth={1.8} className="text-brand" />
-                        <span className="text-[9px] tracking-[.08em] uppercase font-medium text-brand mt-1">
-                          Late
-                        </span>
-                      </>
-                    )}
+                    <div className="flex items-center gap-1.5 mb-1 sm:mb-0">
+                      <seg.Icon size={14} strokeWidth={1.8} className="text-brand" />
+                      <span className="text-[9px] tracking-[.08em] uppercase font-medium text-muted dark:text-white/60 transition-colors duration-300">
+                        {seg.time}
+                      </span>
+                    </div>
+                    <span key={seg.price + dayMode} className="font-display text-[26px] leading-none tracking-[.02em] text-foreground dark:text-white transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
+                      {seg.price}
+                    </span>
+                    <span className="text-[10px] hidden sm:block text-muted dark:text-white/60 transition-colors duration-300">
+                      {seg.label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -632,14 +643,20 @@ export default function Home() {
           className="grid gap-3 md:gap-4 max-w-[1200px] mx-auto grid-cols-1 md:grid-cols-12"
           style={{ gridAutoRows: "80px" }}
         >
-          {galleryItems.map((item, i) => (
+          {(dynGallery.length > 0 ? dynGallery.map((img, i) => ({
+            colSpan: i % 3 === 0 ? 5 : i % 3 === 1 ? 4 : 3,
+            rowSpan: 2,
+            img: img.src,
+            label: img.title,
+            overlay: false
+          })) : galleryItems).map((item, i) => (
             <GalleryCard key={i} {...item} />
           ))}
         </div>
       </section>
 
       {/* ══ REVIEWS (Olive Green) ═════════════════════════════ */}
-      <ReviewsSection />
+      <ReviewsSection reviews={dynReviews} />
 
       {/* ══ CONTACT (White/Dark) ══════════════════════════════ */}
       <section
@@ -837,16 +854,36 @@ const reviews = [
   },
 ];
 
-function ReviewsSection() {
+interface DynReview {
+  name: string;
+  role: string;
+  avatar?: string;
+  rating: number;
+  text: string;
+  sport: string;
+  color?: string;
+}
+
+function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
   const { ref, visible } = useReveal();
   const [active, setActive] = useState(0);
 
+  const displayReviews = customReviews && customReviews.length > 0 ? customReviews.map((r, i) => ({
+    name: r.name,
+    role: r.role,
+    avatar: r.avatar || r.name.charAt(0).toUpperCase(),
+    rating: r.rating,
+    text: r.text,
+    sport: r.sport,
+    color: r.color || (i % 2 === 0 ? "#27a84e" : "#3b82f6")
+  })) : reviews;
+
   /* Auto-advance */
   useEffect(() => {
-    if (!visible) return;
-    const timer = setInterval(() => setActive((a) => (a + 1) % reviews.length), 4000);
+    if (!visible || displayReviews.length === 0) return;
+    const timer = setInterval(() => setActive((a) => (a + 1) % displayReviews.length), 4000);
     return () => clearInterval(timer);
-  }, [visible]);
+  }, [visible, displayReviews.length]);
 
   return (
     <section className="py-24 md:py-28 px-6 md:px-12 overflow-hidden" style={{ background: "#0a1a0c" }}>
@@ -893,7 +930,7 @@ function ReviewsSection() {
 
         {/* Cards grid */}
         <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-          {reviews.map((review, i) => (
+          {displayReviews.map((review, i) => (
             <div
               key={i}
               onClick={() => setActive(i)}
@@ -1036,11 +1073,42 @@ function GalleryCard({ colSpan, rowSpan, img, label, overlay }: (typeof galleryI
 /* ── Contact Form ── */
 function ContactForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [sport, setSport] = useState("Football");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
-    setTimeout(() => setStatus("done"), 1500);
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email: `${name.replace(/\s+/g, "").toLowerCase() || "user"}@example.com`,
+          phone,
+          sport,
+          message,
+        }),
+      });
+      if (res.ok) {
+        setStatus("done");
+        setName("");
+        setPhone("");
+        setSport("Football");
+        setMessage("");
+        setTimeout(() => setStatus("idle"), 3000);
+      } else {
+        setStatus("idle");
+        alert("Failed to send message. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("idle");
+      alert("Error sending message.");
+    }
   };
 
   return (
@@ -1052,15 +1120,19 @@ function ContactForm() {
             type="text"
             placeholder="Rahul Sharma"
             required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="text-[14px] px-4 py-3.5 border border-black/8 dark:border-white/10 rounded-[12px] bg-[#f7f7f5] dark:bg-white/5 text-foreground dark:text-white outline-none focus:border-brand dark:focus:border-brand focus:bg-white dark:focus:bg-white/10 transition-all duration-200 font-sans w-full"
           />
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="text-[10px] tracking-[.1em] uppercase text-muted dark:text-white/60 font-medium transition-colors duration-300">Phone number</label>
           <input
-            type="tel"
+            type="text"
             placeholder="+91 98765 00000"
             required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="text-[14px] px-4 py-3.5 border border-black/8 dark:border-white/10 rounded-[12px] bg-[#f7f7f5] dark:bg-white/5 text-foreground dark:text-white outline-none focus:border-brand dark:focus:border-brand focus:bg-white dark:focus:bg-white/10 transition-all duration-200 font-sans w-full"
           />
         </div>
@@ -1068,9 +1140,13 @@ function ContactForm() {
 
       <div className="flex flex-col gap-1.5 mb-4">
         <label className="text-[10px] tracking-[.1em] uppercase text-muted dark:text-white/60 font-medium transition-colors duration-300">Sport interest</label>
-        <select className="text-[14px] px-4 py-3.5 border border-black/8 dark:border-white/10 rounded-[12px] bg-[#f7f7f5] dark:bg-white/5 text-foreground dark:text-white outline-none focus:border-brand dark:focus:border-brand focus:bg-white dark:focus:bg-white/10 transition-all duration-200 font-sans appearance-none cursor-pointer w-full">
+        <select 
+          value={sport}
+          onChange={(e) => setSport(e.target.value)}
+          className="text-[14px] px-4 py-3.5 border border-black/8 dark:border-white/10 rounded-[12px] bg-[#f7f7f5] dark:bg-white/5 text-foreground dark:text-white outline-none focus:border-brand dark:focus:border-brand focus:bg-white dark:focus:bg-white/10 transition-all duration-200 font-sans appearance-none cursor-pointer w-full"
+        >
           {["Football", "Cricket", "Both"].map((s) => (
-            <option key={s}>{s}</option>
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
       </div>
@@ -1079,6 +1155,8 @@ function ContactForm() {
         <label className="text-[10px] tracking-[.1em] uppercase text-muted dark:text-white/60 font-medium transition-colors duration-300">Message</label>
         <textarea
           rows={4}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Tell us what you're planning — team size, preferred timing, any special requirements..."
           className="text-[14px] px-4 py-3.5 border border-black/8 dark:border-white/10 rounded-[12px] bg-[#f7f7f5] dark:bg-white/5 text-foreground dark:text-white outline-none focus:border-brand dark:focus:border-brand focus:bg-white dark:focus:bg-white/10 transition-all duration-200 font-sans resize-none w-full"
         />

@@ -51,7 +51,8 @@ export async function POST(request: Request) {
       totalSlots,
       totalAmount,
       paidAmount,
-      bookingStatus
+      bookingStatus,
+      sport
     } = body;
 
     // Validation: Check for slot conflict
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
     const remainingAmount = totalAmount - paidAmount;
 
     // Create the booking
-    const booking = await prisma.booking.create({
+    let booking = await prisma.booking.create({
       data: {
         playerName,
         mobileNumber,
@@ -96,9 +97,30 @@ export async function POST(request: Request) {
         paidAmount,
         remainingAmount,
         bookingStatus: bookingStatus || 'pending',
+        sport: sport || 'Football',
         whatsappNumber: mobileNumber, // Assuming standard mobile maps to WA
       }
     });
+
+    if (booking.bookingStatus === 'confirmed' && booking.whatsappNumber) {
+      const message = `Booking Confirmed ✅\n\nHello ${booking.playerName},\n\nYour turf booking for ${booking.sport} has been confirmed.\n\nDate: ${booking.bookingDate}\nTime: ${booking.slotStart} to ${booking.slotEnd}\n\nTotal Amount: ₹${booking.totalAmount}\nPaid Amount: ₹${booking.paidAmount}\nRemaining Amount: ₹${booking.remainingAmount}\n\nThank you for booking with Turf Things.`;
+      
+      const { sendWhatsAppMessage } = await import('@/lib/twilio');
+      const twilioRes = await sendWhatsAppMessage(booking.whatsappNumber, message);
+      
+      if (twilioRes.success) {
+        booking = await prisma.booking.update({
+          where: { id: booking.id },
+          data: { messageStatus: 'sent' }
+        });
+      } else {
+        booking = await prisma.booking.update({
+          where: { id: booking.id },
+          data: { messageStatus: 'failed' }
+        });
+        console.error("Twilio failed:", twilioRes.error);
+      }
+    }
 
     return NextResponse.json({ booking }, { status: 201 });
   } catch (error) {

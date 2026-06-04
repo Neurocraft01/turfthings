@@ -75,7 +75,7 @@ export default function AboutPage() {
       <section className="py-20 text-center">
         <h2 className="font-display text-4xl text-foreground uppercase mb-8">Ready to experience the best?</h2>
         <Link 
-          href="/booking" 
+          href="/#book" 
           className="inline-block bg-brand hover:bg-brand-hover text-black font-bold py-4 px-10 rounded-sm uppercase tracking-wider text-xl transition-transform transform hover:scale-105"
         >
           Book Your Slot Now

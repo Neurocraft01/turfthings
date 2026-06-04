@@ -25,13 +25,18 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
     }
 
-    // Fetch active bookings for this date
-    const bookings = await prisma.booking.findMany({
-      where: {
-        bookingDate: date,
-        bookingStatus: { not: 'cancelled' }
-      }
-    });
+    // Fetch active bookings for this date — gracefully degrade if DB is unavailable
+    let bookings: any[] = [];
+    try {
+      bookings = await prisma.booking.findMany({
+        where: {
+          bookingDate: date,
+          bookingStatus: { not: 'cancelled' }
+        }
+      });
+    } catch (dbErr) {
+      console.warn('DB unavailable — returning all slots as available:', dbErr);
+    }
 
     const allSlots = generateDailySlots();
     const availableSlots = [];
@@ -39,7 +44,7 @@ export async function GET(request: Request) {
     for (let i = 0; i < allSlots.length; i++) {
       const slotStartTime = allSlots[i];
       const slotStartMins = timeToMinutes(slotStartTime);
-      const slotEndMins = slotStartMins + 60;
+      const slotEndMins = slotStartMins + 60; // 1-hour blocks
 
       // Check if this specific 30-min block falls within any existing booking
       const isBooked = bookings.some((b: any) => {

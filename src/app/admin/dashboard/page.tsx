@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { 
   Users, 
   IndianRupee, 
@@ -22,36 +23,49 @@ import {
   Legend
 } from "recharts";
 
-const bookingData = [
-  { name: 'Mon', bookings: 12 },
-  { name: 'Tue', bookings: 19 },
-  { name: 'Wed', bookings: 15 },
-  { name: 'Thu', bookings: 22 },
-  { name: 'Fri', bookings: 45 },
-  { name: 'Sat', bookings: 85 },
-  { name: 'Sun', bookings: 75 },
-];
-
-const revenueData = [
-  { name: 'Week 1', revenue: 45000 },
-  { name: 'Week 2', revenue: 52000 },
-  { name: 'Week 3', revenue: 48000 },
-  { name: 'Week 4', revenue: 71000 },
-];
-
-const sportsPopularity = [
-  { name: 'Box Cricket', value: 65, color: '#059669' },
-  { name: 'Football (5v5)', value: 25, color: '#D97706' },
-  { name: 'Kabaddi', value: 10, color: '#3b82f6' }
-];
-
-const paymentMethods = [
-  { name: 'UPI / PhonePe', value: 60, color: '#0ea5e9' },
-  { name: 'Cash', value: 30, color: '#f59e0b' },
-  { name: 'Pending', value: 10, color: '#ef4444' }
-];
-
 export default function Dashboard() {
+  const [stats, setStats] = useState({
+    todayBookings: "0",
+    monthlyRevenue: "₹0",
+    collectedAmount: "₹0",
+    remainingAmount: "₹0",
+    activePlayers: "0",
+    pendingInquiries: "0",
+  });
+  const [charts, setCharts] = useState<any>({
+    bookingData: [],
+    revenueData: [],
+    sportsPopularity: [],
+    paymentMethods: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/admin/stats");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data.stats);
+          setCharts(data.charts);
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard stats", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-10 h-10 rounded-full border-2 border-brand border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="animate-in fade-in duration-500">
       <div className="flex items-center justify-between mb-8">
@@ -64,10 +78,10 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         {[
-          { title: "Today's Bookings", value: "32", icon: CalendarCheck, trend: "+15% from yesterday", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
-          { title: "Monthly Revenue", value: "₹2,16,000", icon: IndianRupee, trend: "+12% from last month", color: "text-brand", bg: "bg-green-50 border-green-200" },
-          { title: "Active Players", value: "2,420", icon: Users, trend: "+45 new this week", color: "text-purple-600", bg: "bg-purple-50 border-purple-200" },
-          { title: "Pending Inquiries", value: "14", icon: MessageSquare, trend: "Requires attention", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" }
+          { title: "Today's Bookings", value: stats.todayBookings, icon: CalendarCheck, trend: "Live bookings today", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
+          { title: "Expected Revenue", value: stats.monthlyRevenue, icon: IndianRupee, trend: `${stats.collectedAmount} collected / ${stats.remainingAmount} pending`, color: "text-brand", bg: "bg-green-50 border-green-200" },
+          { title: "Active Players", value: stats.activePlayers, icon: Users, trend: "Unique customer names", color: "text-purple-600", bg: "bg-purple-50 border-purple-200" },
+          { title: "Pending Inquiries", value: stats.pendingInquiries, icon: MessageSquare, trend: "Requires attention", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" }
         ].map((stat, idx) => (
           <div key={idx} className="bg-card p-6 rounded-xl border border-card-border shadow-sm flex flex-col hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
@@ -89,7 +103,7 @@ export default function Dashboard() {
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-6">Weekly Bookings (Volume)</h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bookingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={charts.bookingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} />
                 <YAxis stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} />
@@ -109,7 +123,7 @@ export default function Dashboard() {
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-6">Revenue Trend (Monthly)</h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+              <LineChart data={charts.revenueData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} />
                 <YAxis stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
@@ -134,7 +148,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={sportsPopularity}
+                  data={charts.sportsPopularity}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -142,7 +156,7 @@ export default function Dashboard() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {sportsPopularity.map((entry, index) => (
+                  {charts.sportsPopularity.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -158,19 +172,19 @@ export default function Dashboard() {
 
         {/* Payment Methods Pie Chart */}
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm flex flex-col items-center">
-          <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-2 w-full text-left">Payment Methods</h2>
+          <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-2 w-full text-left">Payment Statuses</h2>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={paymentMethods}
+                  data={charts.paymentMethods}
                   cx="50%"
                   cy="50%"
                   innerRadius={0}
                   outerRadius={90}
                   dataKey="value"
                 >
-                  {paymentMethods.map((entry, index) => (
+                  {charts.paymentMethods.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>

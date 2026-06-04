@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Mail, MailOpen, MailPlus, CheckCircle2, Trash2 } from "lucide-react";
 
 type InquiryStatus = "New" | "Read" | "Replied";
@@ -11,19 +11,63 @@ interface Inquiry {
   email: string;
   phone: string;
   message: string;
-  date: string;
+  sport: string;
   status: InquiryStatus;
+  createdAt: string;
 }
-
-const MOCK_INQUIRIES: Inquiry[] = [
-  { id: "INQ-001", name: "Robert Fox", email: "robert@example.com", phone: "+1 234 567 8900", message: "Hi, I wanted to ask about corporate tournament bookings for next month. Do you offer bulk discounts?", date: "2026-05-31 10:30 AM", status: "New" },
-  { id: "INQ-002", name: "Esther Howard", email: "esther@example.com", phone: "+1 987 654 3210", message: "I left my water bottle at the venue yesterday. Has anyone found it?", date: "2026-05-30 04:15 PM", status: "Read" },
-  { id: "INQ-003", name: "Cameron Williamson", email: "cameron@example.com", phone: "+1 555 123 4567", message: "Can we rent bibs and a ball at the venue?", date: "2026-05-29 09:00 AM", status: "Replied" },
-];
 
 export default function ContactsManagementPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [inquiries, setInquiries] = useState(MOCK_INQUIRIES);
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchInquiries();
+  }, []);
+
+  const fetchInquiries = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/contacts");
+      if (res.ok) {
+        const data = await res.json();
+        setInquiries(data.inquiries || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch inquiries", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateInquiryStatus = async (id: string, newStatus: InquiryStatus) => {
+    try {
+      const res = await fetch(`/api/contacts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        setInquiries(prev => prev.map(inq => inq.id === id ? { ...inq, status: newStatus } : inq));
+      }
+    } catch (e) {
+      console.error("Failed to update status", e);
+    }
+  };
+
+  const deleteInquiry = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this inquiry?")) return;
+    try {
+      const res = await fetch(`/api/contacts/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setInquiries(prev => prev.filter(inq => inq.id !== id));
+      }
+    } catch (e) {
+      console.error("Failed to delete inquiry", e);
+    }
+  };
 
   const filteredInquiries = inquiries.filter(inquiry => 
     inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -47,8 +91,20 @@ export default function ContactsManagementPage() {
     }
   };
 
-  const markAsRead = (id: string) => {
-    setInquiries(inquiries.map(inq => inq.id === id ? { ...inq, status: "Read" } : inq));
+  const formatDate = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      });
+    } catch (e) {
+      return dateStr;
+    }
   };
 
   return (
@@ -86,7 +142,19 @@ export default function ContactsManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-card-border">
-              {filteredInquiries.map((inquiry) => (
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-12 text-gray-500">
+                    Loading inquiries...
+                  </td>
+                </tr>
+              ) : filteredInquiries.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-12 text-gray-500">
+                    No inquiries found.
+                  </td>
+                </tr>
+              ) : filteredInquiries.map((inquiry) => (
                 <tr key={inquiry.id} className={`transition-colors ${inquiry.status === 'New' ? 'bg-background/80 hover:bg-background' : 'hover:bg-background/50'}`}>
                   <td className="px-6 py-4">
                     <div className="font-medium text-foreground">{inquiry.name}</div>
@@ -94,11 +162,12 @@ export default function ContactsManagementPage() {
                     <div className="text-xs">{inquiry.phone}</div>
                   </td>
                   <td className="px-6 py-4 max-w-md">
-                    <p className={`truncate ${inquiry.status === 'New' ? 'text-foreground font-medium' : 'text-gray-400'}`}>
+                    <div className="text-xs text-brand/80 font-medium mb-1 uppercase tracking-wider">Sport interest: {inquiry.sport}</div>
+                    <p className={`text-sm ${inquiry.status === 'New' ? 'text-foreground font-medium' : 'text-gray-400'}`}>
                       {inquiry.message}
                     </p>
                   </td>
-                  <td className="px-6 py-4">{inquiry.date}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{formatDate(inquiry.createdAt)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(inquiry.status)}`}>
                       {getStatusIcon(inquiry.status)} {inquiry.status}
@@ -108,7 +177,7 @@ export default function ContactsManagementPage() {
                     <div className="flex justify-end space-x-2">
                       {inquiry.status === 'New' && (
                         <button 
-                          onClick={() => markAsRead(inquiry.id)}
+                          onClick={() => updateInquiryStatus(inquiry.id, 'Read')}
                           className="p-1.5 bg-background border border-card-border rounded hover:text-foreground transition-colors"
                           title="Mark as read"
                         >
@@ -119,11 +188,15 @@ export default function ContactsManagementPage() {
                         href={`mailto:${inquiry.email}?subject=Re: Inquiry at TurfBooking`}
                         className="p-1.5 bg-brand text-black rounded hover:bg-brand-hover transition-colors inline-flex"
                         title="Reply via Email"
-                        onClick={() => setInquiries(inquiries.map(inq => inq.id === inquiry.id ? { ...inq, status: "Replied" } : inq))}
+                        onClick={() => updateInquiryStatus(inquiry.id, 'Replied')}
                       >
                         <MailPlus size={16} />
                       </a>
-                      <button className="p-1.5 bg-red-500/10 text-red-500 rounded hover:bg-red-500 hover:text-foreground transition-colors" title="Delete">
+                      <button 
+                        onClick={() => deleteInquiry(inquiry.id)}
+                        className="p-1.5 bg-red-500/10 text-red-500 rounded hover:bg-red-500 hover:text-foreground transition-colors" 
+                        title="Delete"
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>

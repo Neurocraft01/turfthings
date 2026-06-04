@@ -2,8 +2,8 @@ import { MapPin, Phone, Mail, Send, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Turf Booking",
-  description: "Get in touch with us for bookings, tournaments, or corporate events.",
+  title: "Contact Us | Turf Things",
+  description: "Get in touch with Turf Things for bookings, tournaments, or corporate events. Located at Karvenagar, Pune.",
 };
 
 export default function ContactPage() {
@@ -15,7 +15,7 @@ export default function ContactPage() {
             Get In <span className="text-brand">Touch</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Have questions about bookings, tournaments, or corporate events? We're here to help.
+            Have questions about bookings, tournaments, or corporate events? We&apos;re here to help.
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-display text-xl text-foreground uppercase">Location</h3>
-                    <p className="text-gray-400 mt-1">123 Sports Avenue, Green Park<br />City, ST 12345</p>
+                    <p className="text-gray-400 mt-1">Dudhane Lawns, 52, Sun Empire Rd,<br />Karvenagar, Pune, Maharashtra 411052</p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -40,7 +40,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-display text-xl text-foreground uppercase">Phone</h3>
-                    <p className="text-gray-400 mt-1">+1 (555) 123-4567</p>
+                    <a href="tel:7030499191" className="text-gray-400 mt-1 hover:text-brand transition-colors block">+91 70304 99191</a>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -49,39 +49,47 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-display text-xl text-foreground uppercase">Email</h3>
-                    <p className="text-gray-400 mt-1">hello@turfbooking.com</p>
+                    <a href="mailto:hello@turfthings.in" className="text-gray-400 mt-1 hover:text-brand transition-colors block">hello@turfthings.in</a>
                   </div>
                 </div>
               </div>
 
               <div className="mt-8 pt-8 border-t border-card-border">
                 <a 
-                  href="https://wa.me/15551234567" 
+                  href="https://wa.me/917030499191?text=Hello%2C%20I%20would%20like%20to%20enquire%20about%20turf%20booking." 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-full bg-[#25D366] hover:bg-[#128C7E] text-foreground font-bold py-4 rounded-sm transition-colors uppercase tracking-wider font-display text-xl"
+                  className="flex items-center justify-center w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-4 rounded-sm transition-colors uppercase tracking-wider font-display text-xl"
                 >
                   <MessageCircle size={24} className="mr-3" /> Chat on WhatsApp
                 </a>
               </div>
             </div>
 
-            {/* Map Placeholder */}
-            <div className="bg-card p-2 rounded-xl border border-card-border h-64 relative overflow-hidden">
-              <div className="absolute inset-0 bg-background flex flex-col items-center justify-center text-gray-500">
-                <MapPin size={48} className="mb-4 text-brand opacity-50" />
-                <span className="font-display text-xl uppercase">Google Maps Embed</span>
-              </div>
+            {/* Google Maps Embed */}
+            <div className="bg-card rounded-xl border border-card-border overflow-hidden h-72">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.8979963254376!2d73.81267117507!3d18.497970082569!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf6c5f2e5a5f%3A0x0!2sDudhane+Lawns%2C+52%2C+Sun+Empire+Rd%2C+Karvenagar%2C+Pune!5e0!3m2!1sen!2sin!4v1680000000000!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Turf Things Location - Karvenagar Pune"
+              />
             </div>
           </div>
 
-          {/* Contact Form */}
+          {/* Contact Form → WhatsApp redirect */}
           <div className="bg-card p-8 rounded-xl border border-card-border">
-            <h2 className="font-display text-3xl text-foreground uppercase mb-6">Send a Message</h2>
-            <form className="space-y-6">
+            <h2 className="font-display text-3xl text-foreground uppercase mb-2">Send a Message</h2>
+            <p className="text-sm text-gray-400 mb-6">Fill in the form, then tap the button to send via WhatsApp.</p>
+            <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
                 <input 
+                  id="contact-name"
                   type="text" 
                   className="w-full bg-background border border-card-border rounded-md px-4 py-3 text-foreground focus:outline-none focus:border-brand transition-colors"
                   placeholder="Your Name"
@@ -91,6 +99,7 @@ export default function ContactPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
                   <input 
+                    id="contact-email"
                     type="email" 
                     className="w-full bg-background border border-card-border rounded-md px-4 py-3 text-foreground focus:outline-none focus:border-brand transition-colors"
                     placeholder="you@example.com"
@@ -99,27 +108,31 @@ export default function ContactPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
                   <input 
+                    id="contact-phone"
                     type="tel" 
                     className="w-full bg-background border border-card-border rounded-md px-4 py-3 text-foreground focus:outline-none focus:border-brand transition-colors"
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="+91 70304 99191"
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Message</label>
                 <textarea 
+                  id="contact-message"
                   rows={5}
                   className="w-full bg-background border border-card-border rounded-md px-4 py-3 text-foreground focus:outline-none focus:border-brand transition-colors resize-none"
                   placeholder="How can we help you?"
                 ></textarea>
               </div>
-              <button 
-                type="submit" 
-                className="w-full bg-brand hover:bg-brand-hover text-black font-bold py-4 rounded-sm uppercase tracking-wider text-xl font-display flex items-center justify-center transition-colors"
+              <a 
+                href="https://wa.me/917030499191?text=Hello%2C%20I%20have%20a%20query%20about%20turf%20booking."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-brand hover:bg-brand-hover text-white font-bold py-4 rounded-sm uppercase tracking-wider text-xl font-display flex items-center justify-center transition-colors"
               >
-                <Send size={20} className="mr-2" /> Send Message
-              </button>
-            </form>
+                <Send size={20} className="mr-2" /> Send via WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       </div>

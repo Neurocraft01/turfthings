@@ -36,7 +36,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     // Handle Extension
     if (extendSlots && additionalAmount !== undefined) {
       const currentEndMins = timeToMinutes(booking.slotEnd);
-      const newEndMins = currentEndMins + (extendSlots * 60);
+      const newEndMins = currentEndMins + (extendSlots * 30);
       
       // Calculate new end time string
       const endH = Math.floor(newEndMins / 60);
@@ -86,7 +86,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     // Twilio Integration: Send confirmation if newly confirmed
     if (willConfirm && updatedBooking.whatsappNumber) {
-      const message = `Booking Confirmed ✅\n\nHello ${updatedBooking.playerName},\n\nYour turf booking has been confirmed.\n\nDate: ${updatedBooking.bookingDate}\nTime: ${updatedBooking.slotStart} to ${updatedBooking.slotEnd}\n\nTotal Amount: ₹${updatedBooking.totalAmount}\nPaid Amount: ₹${updatedBooking.paidAmount}\nRemaining Amount: ₹${updatedBooking.remainingAmount}\n\nThank you for booking with Turf Things.`;
+      const message = `Booking Confirmed ✅\n\nHello ${updatedBooking.playerName},\n\nYour turf booking for ${updatedBooking.sport || 'Football'} has been confirmed.\n\nDate: ${updatedBooking.bookingDate}\nTime: ${updatedBooking.slotStart} to ${updatedBooking.slotEnd}\n\nTotal Amount: ₹${updatedBooking.totalAmount}\nPaid Amount: ₹${updatedBooking.paidAmount}\nRemaining Amount: ₹${updatedBooking.remainingAmount}\n\nThank you for booking with Turf Things.`;
       
       const twilioRes = await sendWhatsAppMessage(updatedBooking.whatsappNumber, message);
       

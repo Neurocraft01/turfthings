@@ -19,6 +19,7 @@ interface Booking {
   remainingAmount: number;
   bookingStatus: BookingStatus;
   messageStatus: string | null;
+  sport?: string;
 }
 
 export default function BookingsManagement() {
@@ -44,6 +45,7 @@ export default function BookingsManagement() {
     totalSlots: 1, // Default 1 hour
     totalAmount: 1200,
     paidAmount: 600,
+    sport: "Football",
   });
 
   // Extend Booking State
@@ -55,6 +57,7 @@ export default function BookingsManagement() {
     const options = [];
     for (let h = 0; h < 24; h++) {
       options.push(`${h.toString().padStart(2, '0')}:00`);
+      options.push(`${h.toString().padStart(2, '0')}:30`);
     }
     return options;
   };
@@ -83,7 +86,7 @@ export default function BookingsManagement() {
     try {
       // Calculate End Time
       const [startH, startM] = newBooking.slotStart.split(':').map(Number);
-      const totalMins = (startH * 60) + startM + (newBooking.totalSlots * 60);
+      const totalMins = (startH * 60) + startM + (newBooking.totalSlots * 30);
       const endH = Math.floor(totalMins / 60);
       const endM = totalMins % 60;
       const slotEnd = `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
@@ -266,13 +269,22 @@ export default function BookingsManagement() {
               ) : filteredBookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="font-semibold text-foreground">{booking.playerName}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-foreground">{booking.playerName}</span>
+                      <span className={`text-[9px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full ${
+                        booking.sport === "Cricket"
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                          : "bg-blue-50 text-blue-700 border border-blue-200"
+                      }`}>
+                        {booking.sport || "Football"}
+                      </span>
+                    </div>
                     <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5"><Phone size={10} /> {booking.mobileNumber}</div>
                     <div className="text-[10px] text-gray-400 mt-1 font-mono">{booking.id.slice(0, 8)}...</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="font-medium text-foreground">{booking.slotStart} - {booking.slotEnd}</div>
-                    <div className="text-xs text-gray-500">{booking.totalSlots} hours ({booking.totalSlots * 60} mins)</div>
+                    <div className="text-xs text-gray-500">{booking.totalSlots} slots ({booking.totalSlots * 30} mins)</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="mb-2">{getStatusBadge(booking.bookingStatus)}</div>
@@ -352,6 +364,17 @@ export default function BookingsManagement() {
                 <label className="block text-xs font-medium text-gray-500 mb-1">Mobile Number (For WhatsApp)</label>
                 <input type="tel" required value={newBooking.mobileNumber} onChange={e => setNewBooking({...newBooking, mobileNumber: e.target.value})} className="w-full border rounded-md px-3 py-2 text-sm outline-none focus:border-brand" placeholder="+91..." />
               </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Sport</label>
+                <select 
+                  value={newBooking.sport} 
+                  onChange={e => setNewBooking({...newBooking, sport: e.target.value})} 
+                  className="w-full border rounded-md px-3 py-2 text-sm bg-white outline-none focus:border-brand"
+                >
+                  <option value="Football">Football</option>
+                  <option value="Cricket">Cricket</option>
+                </select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
@@ -366,13 +389,13 @@ export default function BookingsManagement() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Duration (Hours)</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Duration (30-min slots)</label>
                   <select required value={newBooking.totalSlots} onChange={e => setNewBooking({...newBooking, totalSlots: Number(e.target.value)})} className="w-full border rounded-md px-3 py-2 text-sm outline-none focus:border-brand">
-                    <option value={1}>1 Hour</option>
-                    <option value={2}>2 Hours</option>
-                    <option value={3}>3 Hours</option>
-                    <option value={4}>4 Hours</option>
-                    <option value={5}>5 Hours</option>
+                    <option value={1}>30 Mins (1 Slot)</option>
+                    <option value={2}>1 Hour (2 Slots)</option>
+                    <option value={3}>1.5 Hours (3 Slots)</option>
+                    <option value={4}>2 Hours (4 Slots)</option>
+                    <option value={6}>3 Hours (6 Slots)</option>
                   </select>
                 </div>
                 <div>
@@ -412,12 +435,12 @@ export default function BookingsManagement() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Add Duration (Hours)</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Add Duration (30-min slots)</label>
                 <select required value={extendSlots} onChange={e => setExtendSlots(Number(e.target.value))} className="w-full border rounded-md px-3 py-2 text-sm outline-none focus:border-brand">
-                  <option value={1}>+ 1 Hour</option>
-                  <option value={2}>+ 2 Hours</option>
-                  <option value={3}>+ 3 Hours</option>
-                  <option value={4}>+ 4 Hours</option>
+                  <option value={1}>+ 30 Mins (1 Slot)</option>
+                  <option value={2}>+ 1 Hour (2 Slots)</option>
+                  <option value={3}>+ 1.5 Hours (3 Slots)</option>
+                  <option value={4}>+ 2 Hours (4 Slots)</option>
                 </select>
               </div>
               <div>

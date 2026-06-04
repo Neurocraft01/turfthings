@@ -19,10 +19,66 @@ model Booking {
   paidAmount       Int      @map("paid_amount")
   remainingAmount  Int      @map("remaining_amount")
   bookingStatus    String   @map("booking_status") @default("pending") // "confirmed", "pending", "cancelled"
+  sport            String   @default("Football")
   whatsappNumber   String?  @map("whatsapp_number")
   messageStatus    String?  @map("message_status") // "sent", "failed", "pending"
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   @@map("bookings")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admins")
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  sport     String   @default("Football")
+  message   String   @db.Text
+  status    String   @default("New") // "New", "Read", "Replied"
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("inquiries")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  text      String   @db.Text
+  rating    Int      @default(5)
+  sport     String   @default("Football")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("reviews")
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  src       String   @db.Text
+  title     String
+  category  String   @default("Grounds") // "Grounds", "Matches", "Events"
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("gallery_images")
+}
+
+model SiteContent {
+  key   String @id
+  value String @db.Text
+
+  @@map("site_contents")
 }

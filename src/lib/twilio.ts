@@ -5,7 +5,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN || '';
 export const twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER || '';
 export const adminWhatsAppNumber = process.env.ADMIN_WHATSAPP_NUMBER || '';
 
-const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
+const client = accountSid && accountSid.startsWith('AC') && authToken ? twilio(accountSid, authToken) : null;
 
 export const sendWhatsAppMessage = async (to: string, message: string) => {
   if (!client) {

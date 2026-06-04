@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Download, Search, CheckCircle2, AlertCircle, Clock } from "lucide-react";
-import { useState } from "react";
+import { format } from "date-fns";
 
 type PaymentStatus = "Paid" | "Unpaid" | "Partial";
 
@@ -13,23 +14,67 @@ interface Payment {
   paidAmount: number;
   status: PaymentStatus;
   date: string;
-  method: "Online" | "Cash" | "Card";
+  method: string;
 }
-
-const MOCK_PAYMENTS: Payment[] = [
-  { id: "PAY-901", bookingId: "TRF-10293", customer: "Rahul Sharma", amount: 1500, paidAmount: 1500, status: "Paid", date: "2026-06-01", method: "Online" },
-  { id: "PAY-902", bookingId: "TRF-10294", customer: "Priya Desai", amount: 2000, paidAmount: 500, status: "Partial", date: "2026-06-01", method: "Online" },
-  { id: "PAY-903", bookingId: "TRF-10295", customer: "Amit Patel", amount: 1200, paidAmount: 0, status: "Unpaid", date: "2026-06-02", method: "Cash" },
-  { id: "PAY-904", bookingId: "TRF-10297", customer: "Vikram Singh", amount: 1500, paidAmount: 1500, status: "Paid", date: "2026-06-03", method: "Card" },
-];
 
 export default function PaymentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredPayments = MOCK_PAYMENTS.filter(payment => 
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
+  const fetchPayments = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/bookings"); // Fetches all bookings
+      if (res.ok) {
+        const data = await res.json();
+        const bookingsList = data.bookings || [];
+        
+        // Map bookings to payments dynamically
+        const mappedPayments: Payment[] = bookingsList.map((booking: any) => {
+          let status: PaymentStatus = "Paid";
+          if (booking.remainingAmount > 0) {
+            status = booking.paidAmount > 0 ? "Partial" : "Unpaid";
+          }
+          if (booking.bookingStatus === "cancelled") {
+            status = "Unpaid";
+          }
+
+          return {
+            id: `PAY-${booking.id.substring(0, 5).toUpperCase()}`,
+            bookingId: booking.id.substring(0, 8).toUpperCase(),
+            customer: booking.playerName,
+            amount: booking.totalAmount,
+            paidAmount: booking.bookingStatus === "cancelled" ? 0 : booking.paidAmount,
+            status: booking.bookingStatus === "cancelled" ? "Unpaid" : status,
+            date: booking.bookingDate,
+            method: booking.paidAmount > 0 ? "Online" : "None"
+          };
+        });
+
+        setPayments(mappedPayments);
+      }
+    } catch (e) {
+      console.error("Failed to fetch payments data", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredPayments = payments.filter(payment => 
     payment.customer.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    payment.bookingId.toLowerCase().includes(searchTerm.toLowerCase())
+    payment.bookingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    payment.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Compute live summaries
+  const totalExpected = filteredPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalCollected = filteredPayments.reduce((sum, p) => sum + p.paidAmount, 0);
+  const outstandingBalance = totalExpected - totalCollected;
 
   const getStatusIcon = (status: PaymentStatus) => {
     switch (status) {
@@ -47,6 +92,23 @@ export default function PaymentsPage() {
     }
   };
 
+  const exportCSV = () => {
+    if (filteredPayments.length === 0) return;
+    const headers = "Payment ID,Booking Ref,Customer,Total Amount,Paid Amount,Status,Method,Date\n";
+    const rows = filteredPayments.map(p => 
+      `"${p.id}","${p.bookingId}","${p.customer}",${p.amount},${p.paidAmount},"${p.status}","${p.method}","${p.date}"`
+    ).join("\n");
+    
+    const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `turf_payments_${format(new Date(), "yyyy-MM-dd")}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -54,7 +116,10 @@ export default function PaymentsPage() {
           <h1 className="font-display text-4xl text-foreground uppercase tracking-wider">Payments</h1>
           <p className="text-gray-400 mt-1">Track revenue and payment statuses</p>
         </div>
-        <button className="bg-transparent border border-card-border hover:border-brand hover:text-brand text-foreground font-medium py-2.5 px-5 rounded-sm flex items-center transition-colors">
+        <button 
+          onClick={exportCSV}
+          className="bg-transparent border border-card-border hover:border-brand hover:text-brand text-foreground font-medium py-2.5 px-5 rounded-sm flex items-center transition-colors"
+        >
           <Download size={20} className="mr-2" /> Export CSV
         </button>
       </div>
@@ -62,16 +127,16 @@ export default function PaymentsPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-card p-6 rounded-xl border border-card-border border-l-4 border-l-brand">
-          <h3 className="text-gray-400 text-sm font-medium mb-1">Total Expected (This Month)</h3>
-          <div className="font-display text-4xl text-foreground tracking-wider">₹6,200</div>
+          <h3 className="text-gray-400 text-sm font-medium mb-1">Total Expected (Filtered)</h3>
+          <div className="font-display text-4xl text-foreground tracking-wider">₹{totalExpected.toLocaleString("en-IN")}</div>
         </div>
         <div className="bg-card p-6 rounded-xl border border-card-border border-l-4 border-l-green-500">
           <h3 className="text-gray-400 text-sm font-medium mb-1">Total Collected</h3>
-          <div className="font-display text-4xl text-foreground tracking-wider">₹3,500</div>
+          <div className="font-display text-4xl text-foreground tracking-wider">₹{totalCollected.toLocaleString("en-IN")}</div>
         </div>
         <div className="bg-card p-6 rounded-xl border border-card-border border-l-4 border-l-red-500">
           <h3 className="text-gray-400 text-sm font-medium mb-1">Outstanding Balance</h3>
-          <div className="font-display text-4xl text-foreground tracking-wider">₹2,700</div>
+          <div className="font-display text-4xl text-foreground tracking-wider">₹{outstandingBalance.toLocaleString("en-IN")}</div>
         </div>
       </div>
 
@@ -106,13 +171,25 @@ export default function PaymentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-card-border">
-              {filteredPayments.map((payment) => (
+              {loading ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-12 text-gray-500">
+                    Loading payments...
+                  </td>
+                </tr>
+              ) : filteredPayments.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-12 text-gray-500">
+                    No payment records found.
+                  </td>
+                </tr>
+              ) : filteredPayments.map((payment) => (
                 <tr key={payment.id} className="hover:bg-background/50 transition-colors">
                   <td className="px-6 py-4 font-mono text-foreground">{payment.id}</td>
                   <td className="px-6 py-4 font-mono">{payment.bookingId}</td>
                   <td className="px-6 py-4 text-foreground">{payment.customer}</td>
-                  <td className="px-6 py-4">₹{payment.amount.toFixed(2)}</td>
-                  <td className="px-6 py-4 font-medium text-foreground">₹{payment.paidAmount.toFixed(2)}</td>
+                  <td className="px-6 py-4">₹{payment.amount.toLocaleString("en-IN")}</td>
+                  <td className="px-6 py-4 font-medium text-foreground">₹{payment.paidAmount.toLocaleString("en-IN")}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(payment.status)}`}>
                       {getStatusIcon(payment.status)} {payment.status}
