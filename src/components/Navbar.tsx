@@ -41,7 +41,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-          <div className="relative w-[64px] h-[64px] rounded-2xl overflow-hidden">
+          <div className="relative w-[80px] h-[80px] rounded-2xl overflow-hidden">
             <Image
               src="/logo.jpeg"
               alt="Turf Things Logo"
@@ -50,13 +50,6 @@ export default function Navbar() {
               priority
             />
           </div>
-          <span
-            className={`font-display text-[24px] tracking-[0.06em] transition-colors duration-400 hidden sm:block ${
-              isTransparent ? "text-white" : "text-foreground dark:text-white"
-            }`}
-          >
-            Turf Things
-          </span>
         </Link>
 
         {/* Desktop nav links */}

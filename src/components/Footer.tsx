@@ -27,16 +27,13 @@ export default function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-4 no-underline">
-              <div className="relative w-[80px] h-[80px] rounded-3xl overflow-hidden flex-shrink-0">
+              <div className="relative w-[100px] h-[100px] rounded-3xl overflow-hidden flex-shrink-0">
                 <Image
                   src="/logo.jpeg"
                   alt="Turf Things Logo"
                   fill
                   className="object-contain"
                 />
-              </div>
-              <div className="font-display text-[24px] tracking-[0.06em] text-white">
-                Turf Things
               </div>
             </Link>
             <p className="text-[13px] text-white/60 leading-relaxed font-light max-w-[200px]">

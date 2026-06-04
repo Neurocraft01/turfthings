@@ -21,6 +21,8 @@ import {
   Quote,
 } from "lucide-react";
 
+import BookingSection from "@/components/BookingSection";
+
 /* ─── Scroll Reveal Hook ─── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -601,6 +603,9 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
+
+      {/* ══ LIVE BOOKING CALENDAR ═══════════════════════════ */}
+      <BookingSection />
 
       {/* ══ INSTAGRAM CTA (Olive Green w/ Marquee) ════════════ */}
       <InstagramCTA />
