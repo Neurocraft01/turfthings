@@ -202,6 +202,8 @@ export default function Home() {
     "Football", "Cricket", "Football", "Cricket",
     "Football", "Cricket", "Football", "Cricket",
     "Football", "Cricket", "Football", "Cricket",
+    "Football", "Cricket", "Football", "Cricket",
+    "Football", "Cricket", "Football", "Cricket",
   ];
 
   return (
@@ -431,7 +433,7 @@ export default function Home() {
 
               <div className="col-span-2 rounded-[20px] overflow-hidden relative min-h-[240px] md:min-h-[300px]">
                 <Image
-                  src="/turf2.jpg"
+                  src="/turf7.jpg"
                   alt="Aerial view of our football turf"
                   fill
                   className="object-cover object-bottom"
@@ -509,7 +511,7 @@ export default function Home() {
           </Reveal>
 
           {/* Timeline bar */}
-          <Reveal delay={200}>
+          {/* <Reveal delay={200}>
             <div className="mb-10 md:mb-14">
               <div className="text-[10px] tracking-[0.14em] uppercase text-muted dark:text-white/60 font-medium mb-4 transition-colors duration-300">
                 Daily schedule — 24 hours
@@ -542,7 +544,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </Reveal>
+          </Reveal> */}
 
           {/* Rate rows */}
           <div key={dayMode} className="border-t border-black/8 dark:border-white/10 transition-colors duration-300 animate-in fade-in duration-500">
@@ -641,12 +643,12 @@ export default function Home() {
                       boxShadow: "0 0 0 0 rgba(39,168,78,0.5), 0 4px 20px rgba(39,168,78,0.35)",
                     }}
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.boxShadow =
-                        "0 0 0 6px rgba(39,168,78,0.2), 0 4px 28px rgba(39,168,78,0.5)")
+                    (e.currentTarget.style.boxShadow =
+                      "0 0 0 6px rgba(39,168,78,0.2), 0 4px 28px rgba(39,168,78,0.5)")
                     }
                     onMouseLeave={(e) =>
-                      (e.currentTarget.style.boxShadow =
-                        "0 0 0 0 rgba(39,168,78,0.5), 0 4px 20px rgba(39,168,78,0.35)")
+                    (e.currentTarget.style.boxShadow =
+                      "0 0 0 0 rgba(39,168,78,0.5), 0 4px 20px rgba(39,168,78,0.35)")
                     }
                   >
                     <Phone size={16} strokeWidth={2} />
@@ -659,8 +661,8 @@ export default function Home() {
                     className="inline-flex items-center justify-center gap-2 text-[13px] font-medium px-7 py-3.5 rounded-full no-underline tracking-[.04em] w-full sm:w-auto md:w-[220px] border border-white/15 text-white/70 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all duration-300"
                   >
                     <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden>
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.549 4.099 1.51 5.825L0 24l6.335-1.652A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.8 9.8 0 01-5.015-1.374l-.36-.213-3.761.981.998-3.662-.235-.376A9.778 9.778 0 012.182 12C2.182 6.579 6.578 2.182 12 2.182S21.818 6.579 21.818 12 17.422 21.818 12 21.818z"/>
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.549 4.099 1.51 5.825L0 24l6.335-1.652A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.8 9.8 0 01-5.015-1.374l-.36-.213-3.761.981.998-3.662-.235-.376A9.778 9.778 0 012.182 12C2.182 6.579 6.578 2.182 12 2.182S21.818 6.579 21.818 12 17.422 21.818 12 21.818z" />
                     </svg>
                     WhatsApp Us
                   </Link>
@@ -709,9 +711,8 @@ export default function Home() {
           {galleryItems.map((item, i) => (
             <div
               key={i}
-              className={`rounded-2xl overflow-hidden relative cursor-pointer group bg-black/5 dark:bg-white/5 ${
-                i === 0 ? "col-span-2 h-[240px]" : "h-[160px]"
-              }`}
+              className={`rounded-2xl overflow-hidden relative cursor-pointer group bg-black/5 dark:bg-white/5 ${i === 0 ? "col-span-2 h-[240px]" : "h-[160px]"
+                }`}
             >
               <Image
                 src={item.img}
@@ -767,7 +768,7 @@ export default function Home() {
               {[
                 { Icon: MapPin, label: "Location", val: "Old Dudhane Lawns, 52, Sun Empire Rd, Karvenagar, Pune, Maharashtra 411052", href: "https://maps.app.goo.gl/NBPFY7NWae4ZCjjt7" },
                 { Icon: Phone, label: "Phone", val: "+91 70304 99191", href: "tel:7030499191" },
-                { Icon: Mail, label: "Email", val: "hello@turfthings.in", href: "mailto:hello@turfthings.in" },
+                { Icon: Mail, label: "Email", val: "turfthings999@gmail.com", href: "mailto:turfthings999@gmail.com" },
                 { Icon: Clock, label: "Open Hours", val: "Daily 24/7" },
               ].map(({ Icon, label, val, href }) => (
                 <div key={label} className="flex items-start gap-4">
@@ -786,6 +787,20 @@ export default function Home() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Google Maps Embed */}
+            <div className="mt-8 rounded-2xl overflow-hidden border border-black/8 dark:border-white/10 shadow-sm" style={{ height: "220px" }}>
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.8979963254376!2d73.81267117507!3d18.497970082569!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf2c73d60e11%3A0xa765c4bec67c3c5c!2sTurf%20Things!5e0!3m2!1sen!2sin!4v1717600000000!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Turf Things Location - Karvenagar Pune"
+              />
             </div>
           </Reveal>
 
@@ -1118,11 +1133,11 @@ function GalleryFilter() {
 /* ── Gallery items — real turf photos ── */
 const galleryItems = [
   { colSpan: 5, rowSpan: 5, img: "/turf1.jpeg", label: "Football Ground", overlay: false },
-  { colSpan: 7, rowSpan: 3, img: "/turf2.jpg",  label: "Aerial View",     overlay: false },
-  { colSpan: 4, rowSpan: 3, img: "/turf3.jpg",  label: "Turf Surface",    overlay: false },
-  { colSpan: 3, rowSpan: 3, img: "/turf4.jpg",  label: "Cricket Pitch",   overlay: false },
-  { colSpan: 4, rowSpan: 3, img: "/turf5.jpg",  label: "Night Lights",    overlay: false },
-  { colSpan: 7, rowSpan: 2, img: "/turf6.jpg",  label: "5-a-Side Field",  overlay: false },
+  { colSpan: 7, rowSpan: 3, img: "/turf2.jpg", label: "Aerial View", overlay: false },
+  { colSpan: 4, rowSpan: 3, img: "/turf3.jpg", label: "Turf Surface", overlay: false },
+  { colSpan: 3, rowSpan: 3, img: "/turf4.jpg", label: "Cricket Pitch", overlay: false },
+  { colSpan: 4, rowSpan: 3, img: "/turf5.jpg", label: "Night Lights", overlay: false },
+  { colSpan: 7, rowSpan: 2, img: "/turf6.jpg", label: "5-a-Side Field", overlay: false },
 ];
 
 function GalleryCard({ colSpan, rowSpan, img, label, overlay }: (typeof galleryItems)[0]) {
@@ -1200,7 +1215,7 @@ function ContactForm() {
           <label className="text-[10px] tracking-[.1em] uppercase text-muted dark:text-white/60 font-medium transition-colors duration-300">Your name</label>
           <input
             type="text"
-            placeholder="Rahul Sharma"
+            placeholder="Your Name"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -1211,7 +1226,7 @@ function ContactForm() {
           <label className="text-[10px] tracking-[.1em] uppercase text-muted dark:text-white/60 font-medium transition-colors duration-300">Phone number</label>
           <input
             type="text"
-            placeholder="+91 98765 00000"
+            placeholder="Your Number (+91)"
             required
             value={phone}
             onChange={(e) => setPhone(e.target.value)}

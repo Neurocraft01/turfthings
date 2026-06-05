@@ -127,16 +127,16 @@ export default function Footer() {
               <li className="flex items-center gap-3">
                 <Mail size={16} className="text-brand flex-shrink-0" strokeWidth={2} />
                 <Link
-                  href="mailto:hello@turfthings.in"
+                  href="mailto:turfthings999@gmail.com"
                   className="text-[13px] text-white/70 font-medium hover:text-brand transition-colors no-underline"
                 >
-                  hello@turfthings.in
+                  turfthings999@gmail.com
                 </Link>
               </li>
               <li className="flex items-center gap-3">
                 <Clock size={16} className="text-brand flex-shrink-0" strokeWidth={2} />
                 <span className="text-[13px] text-white/70 font-medium">
-                  Daily 5:00 AM – 12 midnight
+                  Daily 24/7
                 </span>
               </li>
             </ul>

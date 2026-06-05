@@ -49,7 +49,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-display text-xl text-foreground uppercase">Email</h3>
-                    <a href="mailto:hello@turfthings.in" className="text-gray-400 mt-1 hover:text-brand transition-colors block">hello@turfthings.in</a>
+                    <a href="mailto:turfthings999@gmail.com" className="text-gray-400 mt-1 hover:text-brand transition-colors block">turfthings999@gmail.com</a>
                   </div>
                 </div>
               </div>
