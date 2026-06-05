@@ -112,7 +112,7 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin size={16} className="text-brand flex-shrink-0 mt-0.5" strokeWidth={2} />
                 <span className="text-[13px] text-white/70 font-medium leading-relaxed">
-                  Dudhane Lawns, 52, Sun Empire Rd,<br />Karvenagar, Pune, Maharashtra 411052
+                  Old Dudhane Lawns, 52, Sun Empire Rd,<br />Karvenagar, Pune, Maharashtra 411052
                 </span>
               </li>
               <li className="flex items-center gap-3">

@@ -429,12 +429,12 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="col-span-2 rounded-[20px] overflow-hidden relative min-h-[160px] md:min-h-[200px]">
+              <div className="col-span-2 rounded-[20px] overflow-hidden relative min-h-[240px] md:min-h-[300px]">
                 <Image
-                  src="https://images.unsplash.com/photo-1551958219-acbc595aeeff?q=80&w=900&auto=format&fit=crop"
+                  src="/turf2.jpg"
                   alt="Aerial view of our football turf"
                   fill
-                  className="object-cover"
+                  className="object-cover object-bottom"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-4 left-4 text-[11px] tracking-[.08em] uppercase text-white/90 font-medium flex items-center gap-1.5">
@@ -581,37 +581,99 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Late night band */}
+          {/* Booking CTA */}
           <Reveal delay={400}>
-            <div className="mt-10 md:mt-12 bg-[#f7f7f5] dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-[20px] px-6 md:px-10 py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-colors duration-300">
-              <div>
-                <div className="text-[10px] tracking-[0.14em] uppercase text-brand font-medium mb-2">
-                  Late night bookings
+            <div
+              className="mt-10 md:mt-14 rounded-[28px] overflow-hidden relative"
+              style={{
+                background: "linear-gradient(135deg, #0a1a0c 0%, #0f2a12 60%, #071209 100%)",
+              }}
+            >
+              {/* Glow blob */}
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full pointer-events-none"
+                style={{
+                  background: "radial-gradient(ellipse at center, rgba(39,168,78,0.18) 0%, transparent 70%)",
+                  filter: "blur(40px)",
+                }}
+              />
+              {/* Subtle grid lines */}
+              <div
+                className="absolute inset-0 pointer-events-none opacity-[0.04]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
+                  backgroundSize: "40px 40px",
+                }}
+              />
+
+              <div className="relative z-10 px-8 md:px-14 py-12 md:py-16 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-8">
+                {/* Left copy */}
+                <div className="text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 text-[10px] tracking-[0.16em] uppercase font-medium text-brand mb-4">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full bg-brand"
+                      style={{ animation: "pulse-dot 2s infinite" }}
+                    />
+                    Slots available now
+                  </div>
+                  <div
+                    className="font-display text-white leading-none mb-3"
+                    style={{ fontSize: "clamp(36px,5vw,60px)", letterSpacing: ".01em" }}
+                  >
+                    Ready to
+                    <br />
+                    <em className="font-serif not-italic italic text-brand">play?</em>
+                  </div>
+                  <p className="text-[14px] text-white/50 font-light leading-relaxed max-w-xs">
+                    Book your slot today — Football &amp; Cricket, any time, any day.
+                  </p>
                 </div>
-                <div className="font-display text-foreground dark:text-white leading-none transition-colors duration-300" style={{ fontSize: "clamp(32px,4vw,36px)", letterSpacing: ".02em" }}>
-                  Midnight &amp; Beyond
+
+                {/* Right actions */}
+                <div className="flex flex-col sm:flex-row md:flex-col items-center gap-3 w-full md:w-auto flex-shrink-0">
+                  <Link
+                    href="tel:7030499191"
+                    className="group inline-flex items-center justify-center gap-2.5 text-[14px] font-semibold px-8 py-4 rounded-full no-underline tracking-[.04em] w-full sm:w-auto md:w-[220px] transition-all duration-300 hover:scale-[1.04]"
+                    style={{
+                      background: "#27a84e",
+                      color: "#fff",
+                      boxShadow: "0 0 0 0 rgba(39,168,78,0.5), 0 4px 20px rgba(39,168,78,0.35)",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.boxShadow =
+                        "0 0 0 6px rgba(39,168,78,0.2), 0 4px 28px rgba(39,168,78,0.5)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.boxShadow =
+                        "0 0 0 0 rgba(39,168,78,0.5), 0 4px 20px rgba(39,168,78,0.35)")
+                    }
+                  >
+                    <Phone size={16} strokeWidth={2} />
+                    Call 70304 99191
+                  </Link>
+                  <Link
+                    href="https://wa.me/917030499191?text=Hi%2C%20I%27d%20like%20to%20book%20a%20slot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 text-[13px] font-medium px-7 py-3.5 rounded-full no-underline tracking-[.04em] w-full sm:w-auto md:w-[220px] border border-white/15 text-white/70 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all duration-300"
+                  >
+                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden>
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.549 4.099 1.51 5.825L0 24l6.335-1.652A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.8 9.8 0 01-5.015-1.374l-.36-.213-3.761.981.998-3.662-.235-.376A9.778 9.778 0 012.182 12C2.182 6.579 6.578 2.182 12 2.182S21.818 6.579 21.818 12 17.422 21.818 12 21.818z"/>
+                    </svg>
+                    WhatsApp Us
+                  </Link>
+                  <Link
+                    href="https://instagram.com/turf_things_"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 text-[11px] text-white/35 font-medium tracking-[.06em] no-underline hover:text-brand transition-colors duration-300 uppercase"
+                  >
+                    <Camera size={12} strokeWidth={1.8} />
+                    @turf_things_
+                  </Link>
                 </div>
-                <div className="text-[13px] text-muted dark:text-white/60 font-light mt-2 transition-colors duration-300">
-                  Available on call · custom rates · prior arrangement needed
-                </div>
-              </div>
-              <div className="flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
-                <Link
-                  href="tel:7030499191"
-                  className="inline-flex items-center justify-center gap-2 text-[13px] font-medium px-7 py-3.5 rounded-full bg-brand text-white no-underline tracking-[.04em] hover:bg-brand-hover hover:scale-[1.02] transition-all duration-200 w-full md:w-auto"
-                >
-                  <Phone size={14} strokeWidth={2} />
-                  Call 70304 99191
-                </Link>
-                <Link
-                  href="https://instagram.com/turf_things_"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 text-[12px] text-muted dark:text-white/60 font-medium tracking-[.04em] no-underline hover:text-brand dark:hover:text-brand transition-colors duration-300 w-full md:w-auto"
-                >
-                  <Camera size={13} strokeWidth={1.8} />
-                  @turf_things_
-                </Link>
               </div>
             </div>
           </Reveal>
@@ -642,17 +704,37 @@ export default function Home() {
           </div>
         </Reveal>
 
+        {/* Mobile: 2-col uniform grid */}
+        <div className="grid grid-cols-2 gap-3 max-w-[1200px] mx-auto md:hidden">
+          {galleryItems.map((item, i) => (
+            <div
+              key={i}
+              className={`rounded-2xl overflow-hidden relative cursor-pointer group bg-black/5 dark:bg-white/5 ${
+                i === 0 ? "col-span-2 h-[240px]" : "h-[160px]"
+              }`}
+            >
+              <Image
+                src={item.img}
+                alt={item.label}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                sizes="(max-width: 768px) 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60" />
+              <span className="absolute bottom-3 left-3.5 text-[10px] tracking-[.08em] uppercase text-white font-medium flex items-center gap-1 shadow-sm">
+                <ChevronRight size={10} className="text-brand" />
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: 12-col masonry */}
         <div
-          className="grid gap-3 md:gap-4 max-w-[1200px] mx-auto grid-cols-1 md:grid-cols-12"
+          className="hidden md:grid gap-4 max-w-[1200px] mx-auto grid-cols-12"
           style={{ gridAutoRows: "80px" }}
         >
-          {(dynGallery.length > 0 ? dynGallery.map((img, i) => ({
-            colSpan: i % 3 === 0 ? 5 : i % 3 === 1 ? 4 : 3,
-            rowSpan: 2,
-            img: img.src,
-            label: img.title,
-            overlay: false
-          })) : galleryItems).map((item, i) => (
+          {galleryItems.map((item, i) => (
             <GalleryCard key={i} {...item} />
           ))}
         </div>
@@ -1033,14 +1115,14 @@ function GalleryFilter() {
   );
 }
 
-/* ── Gallery items ── */
+/* ── Gallery items — real turf photos ── */
 const galleryItems = [
-  { colSpan: 5, rowSpan: 4, img: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=800&auto=format&fit=crop", label: "Main Football Ground", overlay: false },
-  { colSpan: 4, rowSpan: 2, img: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=700&auto=format&fit=crop", label: "Cricket Pitch", overlay: false },
-  { colSpan: 3, rowSpan: 2, img: "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=600&auto=format&fit=crop", label: "Flood-lit Arena", overlay: false },
-  { colSpan: 4, rowSpan: 2, img: "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?q=80&w=700&auto=format&fit=crop", label: "Box Cricket Net", overlay: false },
-  { colSpan: 4, rowSpan: 2, img: "https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?q=80&w=700&auto=format&fit=crop", label: "5-a-Side Football", overlay: false },
-  { colSpan: 4, rowSpan: 2, img: "https://images.unsplash.com/photo-1551958219-acbc595aeeff?q=80&w=700&auto=format&fit=crop", label: "Premium Turf Surface", overlay: false },
+  { colSpan: 5, rowSpan: 5, img: "/turf1.jpeg", label: "Football Ground", overlay: false },
+  { colSpan: 7, rowSpan: 3, img: "/turf2.jpg",  label: "Aerial View",     overlay: false },
+  { colSpan: 4, rowSpan: 3, img: "/turf3.jpg",  label: "Turf Surface",    overlay: false },
+  { colSpan: 3, rowSpan: 3, img: "/turf4.jpg",  label: "Cricket Pitch",   overlay: false },
+  { colSpan: 4, rowSpan: 3, img: "/turf5.jpg",  label: "Night Lights",    overlay: false },
+  { colSpan: 7, rowSpan: 2, img: "/turf6.jpg",  label: "5-a-Side Field",  overlay: false },
 ];
 
 function GalleryCard({ colSpan, rowSpan, img, label, overlay }: (typeof galleryItems)[0]) {
