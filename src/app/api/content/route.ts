@@ -1,7 +1,23 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-// GET /api/content — Retrieve gallery, reviews, and site content
+// Default pricing structure
+const DEFAULT_PRICING = {
+  weekday: [
+    { period: "Morning",    time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600",  pct: "60%"  },
+    { period: "Afternoon",  time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400",  pct: "40%"  },
+    { period: "Evening",    time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800",  pct: "80%"  },
+    { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours",  price: "₹1000", pct: "100%" },
+  ],
+  weekend: [
+    { period: "Morning",    time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600",  pct: "60%"  },
+    { period: "Afternoon",  time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400",  pct: "40%"  },
+    { period: "Evening",    time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800",  pct: "80%"  },
+    { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours",  price: "₹1000", pct: "100%" },
+  ],
+};
+
+// GET /api/content — Retrieve gallery, reviews, site content, and pricing
 export async function GET() {
   try {
     // 1. Fetch reviews — Seed if empty
@@ -43,28 +59,52 @@ export async function GET() {
       }
     }
 
-    // 3. Fetch Site Content (mission/vision) — Seed if empty
+    // 3. Fetch Site Content (mission/vision/pricing) — Seed missing keys
     let contents = await prisma.siteContent.findMany();
-    if (contents.length === 0) {
+    const existingKeys = contents.map(c => c.key);
+
+    const toSeed: { key: string; value: string }[] = [];
+    if (!existingKeys.includes('mission')) {
+      toSeed.push({ key: 'mission', value: 'To elevate the local sports community by providing accessible, professional-grade facilities that inspire athletic excellence and foster team spirit.' });
+    }
+    if (!existingKeys.includes('vision')) {
+      toSeed.push({ key: 'vision', value: 'To become the premier destination for sports enthusiasts across the region, recognized not just for our exceptional turf, but for the community we build.' });
+    }
+    if (!existingKeys.includes('pricing_weekday')) {
+      toSeed.push({ key: 'pricing_weekday', value: JSON.stringify(DEFAULT_PRICING.weekday) });
+    }
+    if (!existingKeys.includes('pricing_weekend')) {
+      toSeed.push({ key: 'pricing_weekend', value: JSON.stringify(DEFAULT_PRICING.weekend) });
+    }
+
+    if (toSeed.length > 0) {
       try {
-        await prisma.siteContent.createMany({
-          data: [
-            { key: "mission", value: "To elevate the local sports community by providing accessible, professional-grade facilities that inspire athletic excellence and foster team spirit." },
-            { key: "vision", value: "To become the premier destination for sports enthusiasts across the region, recognized not just for our exceptional turf, but for the community we build." }
-          ]
-        });
+        await prisma.siteContent.createMany({ data: toSeed });
         contents = await prisma.siteContent.findMany();
       } catch (seedErr) {
         console.error('Failed to seed site content:', seedErr);
       }
     }
 
-    const pageContent = contents.reduce((acc: any, curr) => {
+    const pageContent = contents.reduce((acc: Record<string, string>, curr) => {
       acc[curr.key] = curr.value;
       return acc;
     }, {});
 
-    return NextResponse.json({ reviews, gallery, pageContent }, { status: 200 });
+    // Parse pricing JSON safely
+    let pricing_weekday = DEFAULT_PRICING.weekday;
+    let pricing_weekend = DEFAULT_PRICING.weekend;
+    try {
+      if (pageContent.pricing_weekday) pricing_weekday = JSON.parse(pageContent.pricing_weekday);
+      if (pageContent.pricing_weekend) pricing_weekend = JSON.parse(pageContent.pricing_weekend);
+    } catch { /* keep defaults */ }
+
+    return NextResponse.json({
+      reviews,
+      gallery,
+      pageContent,
+      pricing: { weekday: pricing_weekday, weekend: pricing_weekend }
+    }, { status: 200 });
 
   } catch (error) {
     console.error('Failed to fetch content:', error);
@@ -76,7 +116,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { type, ...data } = body; // type is 'review' or 'gallery'
+    const { type, ...data } = body;
 
     if (type === 'review') {
       const { name, role, text, rating, sport } = data;
@@ -100,11 +140,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Image source and title are required' }, { status: 400 });
       }
       const img = await prisma.galleryImage.create({
-        data: {
-          src,
-          title,
-          category: category || 'Grounds'
-        }
+        data: { src, title, category: category || 'Grounds' }
       });
       return NextResponse.json({ success: true, item: img }, { status: 201 });
     }
@@ -116,25 +152,23 @@ export async function POST(request: Request) {
   }
 }
 
-// PUT /api/content — Update about page settings (mission/vision)
+// PUT /api/content — Update mission / vision / pricing
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { mission, vision } = body;
+    const { mission, vision, pricing_weekday, pricing_weekend } = body;
 
-    if (mission !== undefined) {
-      await prisma.siteContent.upsert({
-        where: { key: 'mission' },
-        update: { value: mission },
-        create: { key: 'mission', value: mission }
-      });
-    }
+    const updates: { key: string; value: string }[] = [];
+    if (mission !== undefined) updates.push({ key: 'mission', value: mission });
+    if (vision !== undefined) updates.push({ key: 'vision', value: vision });
+    if (pricing_weekday !== undefined) updates.push({ key: 'pricing_weekday', value: JSON.stringify(pricing_weekday) });
+    if (pricing_weekend !== undefined) updates.push({ key: 'pricing_weekend', value: JSON.stringify(pricing_weekend) });
 
-    if (vision !== undefined) {
+    for (const { key, value } of updates) {
       await prisma.siteContent.upsert({
-        where: { key: 'vision' },
-        update: { value: vision },
-        create: { key: 'vision', value: vision }
+        where: { key },
+        update: { value },
+        create: { key, value },
       });
     }
 

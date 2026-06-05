@@ -125,10 +125,26 @@ function Stars({ count = 5 }: { count?: number }) {
 }
 
 /* ═══════════════════════════════════════════════════════ */
+const DEFAULT_WEEKDAY_RATES = [
+  { period: "Morning", time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "60%" },
+  { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours", price: "₹400", pct: "40%" },
+  { period: "Evening", time: "5:00 PM – 12:00 AM · 7 hours", price: "₹800", pct: "80%" },
+  { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours", price: "₹1000", pct: "100%" },
+];
+
+const DEFAULT_WEEKEND_RATES = [
+  { period: "Morning", time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "60%" },
+  { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours", price: "₹400", pct: "40%" },
+  { period: "Evening", time: "5:00 PM – 12:00 AM · 7 hours", price: "₹800", pct: "80%" },
+  { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours", price: "₹1000", pct: "100%" },
+];
+
 export default function Home() {
   const [dayMode, setDayMode] = useState<"week" | "wend">("week");
   const [dynReviews, setDynReviews] = useState<any[]>([]);
   const [dynGallery, setDynGallery] = useState<any[]>([]);
+  const [weekdayRates, setWeekdayRates] = useState(DEFAULT_WEEKDAY_RATES);
+  const [weekendRates, setWeekendRates] = useState(DEFAULT_WEEKEND_RATES);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -138,6 +154,8 @@ export default function Home() {
           const data = await res.json();
           if (data.reviews && data.reviews.length > 0) setDynReviews(data.reviews);
           if (data.gallery && data.gallery.length > 0) setDynGallery(data.gallery);
+          if (data.pricing?.weekday?.length > 0) setWeekdayRates(data.pricing.weekday);
+          if (data.pricing?.weekend?.length > 0) setWeekendRates(data.pricing.weekend);
         }
       } catch (err) {
         console.error("Failed to fetch content:", err);
@@ -177,20 +195,6 @@ export default function Home() {
       cancelAnimationFrame(raf);
     };
   }, []);
-
-  const weekdayRates = [
-    { period: "Morning",   time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "60%" },
-    { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400", pct: "40%" },
-    { period: "Evening",   time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800", pct: "80%" },
-    { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours",  price: "₹1000", pct: "100%" },
-  ];
-
-  const weekendRates = [
-    { period: "Morning",   time: "5:00 AM – 12:00 PM · 7 hours", price: "₹600", pct: "60%" },
-    { period: "Afternoon", time: "12:00 PM – 5:00 PM · 5 hours",  price: "₹400", pct: "40%" },
-    { period: "Evening",   time: "5:00 PM – 12:00 AM · 7 hours",  price: "₹800", pct: "80%" },
-    { period: "Late Night", time: "12:00 AM – 5:00 AM · 5 hours",  price: "₹1000", pct: "100%" },
-  ];
 
   const rates = dayMode === "week" ? weekdayRates : weekendRates;
 
@@ -275,12 +279,12 @@ export default function Home() {
           <p
             className="font-serif italic text-white/55 leading-relaxed max-w-sm"
             style={{
-              fontSize: "18px",
+              fontSize: "26px",
               opacity: 0,
               animation: "fadeUp .9s cubic-bezier(.16,1,.3,1) .5s forwards",
             }}
           >
-            Premium cricket &amp; football grounds, real-time availability, instant confirmation — all in one place.
+            Premium Turf Ground Solutions for Football &amp; Cricket Enthusiasts
           </p>
 
           <div
@@ -378,10 +382,10 @@ export default function Home() {
 
             <div className="flex flex-col">
               {[
-                { Icon: Zap,         title: "Instant confirmation", desc: "Book and confirm your slot in under 60 seconds" },
-                { Icon: MapPin,      title: "Near you always",      desc: "Conveniently located across Pune" },
-                { Icon: ShieldCheck, title: "Verified grounds",     desc: "Every turf inspected and rated by our team" },
-                { Icon: Trophy,      title: "Cricket & Football",   desc: "Two premium sports, one perfect ground" },
+                { Icon: Zap, title: "Instant confirmation", desc: "Book and confirm your slot in under 60 seconds" },
+                { Icon: MapPin, title: "Near you always", desc: "Conveniently located across Pune" },
+                { Icon: ShieldCheck, title: "Verified grounds", desc: "Every turf inspected and rated by our team" },
+                { Icon: Trophy, title: "Cricket & Football", desc: "Two premium sports, one perfect ground" },
               ].map(({ Icon, title, desc }, i) => (
                 <div
                   key={i}
@@ -495,9 +499,8 @@ export default function Home() {
                 <button
                   key={mode}
                   onClick={() => setDayMode(mode)}
-                  className={`text-[12px] px-6 py-2.5 rounded-full border-none cursor-pointer font-sans tracking-[.04em] transition-all duration-250 ${
-                    dayMode === mode ? "bg-white dark:bg-white/10 shadow-sm text-foreground dark:text-white" : "bg-transparent text-muted dark:text-white/60"
-                  }`}
+                  className={`text-[12px] px-6 py-2.5 rounded-full border-none cursor-pointer font-sans tracking-[.04em] transition-all duration-250 ${dayMode === mode ? "bg-white dark:bg-white/10 shadow-sm text-foreground dark:text-white" : "bg-transparent text-muted dark:text-white/60"
+                    }`}
                 >
                   {mode === "week" ? "Weekdays" : "Weekends"}
                 </button>
@@ -513,9 +516,9 @@ export default function Home() {
               </div>
               <div className="flex flex-col sm:flex-row rounded-2xl overflow-hidden border border-black/8 dark:border-white/10 transition-colors duration-300">
                 {[
-                  { flex: 7, bgClass: "bg-[#fffbf0] dark:bg-white/5", Icon: Sun,   price: rates[0].price, time: "5AM–12PM",  label: "Morning" },
+                  { flex: 7, bgClass: "bg-[#fffbf0] dark:bg-white/5", Icon: Sun, price: rates[0].price, time: "5AM–12PM", label: "Morning" },
                   { flex: 5, bgClass: "bg-[#f7f7f5] dark:bg-transparent", Icon: Cloud, price: rates[1].price, time: "12PM–5PM", label: "Afternoon" },
-                  { flex: 7, bgClass: "bg-white dark:bg-white/5", Icon: Moon,  price: rates[2].price, time: "5PM–12AM", label: "Evening"  },
+                  { flex: 7, bgClass: "bg-white dark:bg-white/5", Icon: Moon, price: rates[2].price, time: "5PM–12AM", label: "Evening" },
                   { flex: 5, bgClass: "bg-[#edf7f1] dark:bg-white/5", Icon: Clock, price: rates[3].price, time: "12AM–5AM", label: "Late Night" },
                 ].map((seg, i) => (
                   <div
@@ -680,10 +683,10 @@ export default function Home() {
 
             <div className="flex flex-col gap-5">
               {[
-                { Icon: MapPin, label: "Location", val: "Dudhane Lawns, 52, Sun Empire Rd, Karvenagar, Pune, Maharashtra 411052", href: "https://maps.app.goo.gl/NBPFY7NWae4ZCjjt7" },
-                { Icon: Phone,  label: "Phone",    val: "+91 70304 99191",  href: "tel:7030499191" },
-                { Icon: Mail,   label: "Email",    val: "hello@turfthings.in", href: "mailto:hello@turfthings.in" },
-                { Icon: Clock,  label: "Open Hours", val: "Daily 5:00 AM – 12:00 midnight" },
+                { Icon: MapPin, label: "Location", val: "Old Dudhane Lawns, 52, Sun Empire Rd, Karvenagar, Pune, Maharashtra 411052", href: "https://maps.app.goo.gl/NBPFY7NWae4ZCjjt7" },
+                { Icon: Phone, label: "Phone", val: "+91 70304 99191", href: "tel:7030499191" },
+                { Icon: Mail, label: "Email", val: "hello@turfthings.in", href: "mailto:hello@turfthings.in" },
+                { Icon: Clock, label: "Open Hours", val: "Daily 24/7" },
               ].map(({ Icon, label, val, href }) => (
                 <div key={label} className="flex items-start gap-4">
                   <div className="w-[42px] h-[42px] rounded-xl bg-[#f7f7f5] dark:bg-white/5 shadow-sm border border-black/5 dark:border-white/10 flex items-center justify-center flex-shrink-0 text-brand transition-colors duration-300">
@@ -774,7 +777,7 @@ function InstagramCTA() {
         >
           Join our <em className="font-serif not-italic italic text-brand">community</em>
         </h2>
-        
+
         <p
           className="text-[15px] text-white/60 font-light max-w-md mx-auto leading-relaxed mb-8"
           style={{
@@ -942,11 +945,10 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
               }}
             >
               <div
-                className={`bg-white/5 rounded-2xl p-6 md:p-7 h-full flex flex-col transition-all duration-300 border ${
-                  active === i
-                    ? "border-brand bg-white/10"
-                    : "border-white/10 hover:border-brand/50"
-                }`}
+                className={`bg-white/5 rounded-2xl p-6 md:p-7 h-full flex flex-col transition-all duration-300 border ${active === i
+                  ? "border-brand bg-white/10"
+                  : "border-white/10 hover:border-brand/50"
+                  }`}
               >
                 {/* Quote icon */}
                 <Quote
@@ -999,9 +1001,8 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={`rounded-full transition-all duration-300 border-none cursor-pointer ${
-                active === i ? "w-6 h-2 bg-brand" : "w-2 h-2 bg-white/20"
-              }`}
+              className={`rounded-full transition-all duration-300 border-none cursor-pointer ${active === i ? "w-6 h-2 bg-brand" : "w-2 h-2 bg-white/20"
+                }`}
             />
           ))}
         </div>
@@ -1020,11 +1021,10 @@ function GalleryFilter() {
         <button
           key={f}
           onClick={() => setActive(f)}
-          className={`text-[12px] px-5 py-2.5 rounded-full border cursor-pointer transition-all duration-200 font-sans tracking-[.04em] ${
-            active === f
-              ? "bg-brand text-white border-brand shadow-sm"
-              : "bg-white dark:bg-white/5 text-muted dark:text-white/60 border-black/10 dark:border-white/10 hover:bg-brand-light dark:hover:bg-white/10 hover:text-brand dark:hover:text-white hover:border-brand/30 dark:hover:border-white/20"
-          }`}
+          className={`text-[12px] px-5 py-2.5 rounded-full border cursor-pointer transition-all duration-200 font-sans tracking-[.04em] ${active === f
+            ? "bg-brand text-white border-brand shadow-sm"
+            : "bg-white dark:bg-white/5 text-muted dark:text-white/60 border-black/10 dark:border-white/10 hover:bg-brand-light dark:hover:bg-white/10 hover:text-brand dark:hover:text-white hover:border-brand/30 dark:hover:border-white/20"
+            }`}
         >
           {f}
         </button>
@@ -1140,7 +1140,7 @@ function ContactForm() {
 
       <div className="flex flex-col gap-1.5 mb-4">
         <label className="text-[10px] tracking-[.1em] uppercase text-muted dark:text-white/60 font-medium transition-colors duration-300">Sport interest</label>
-        <select 
+        <select
           value={sport}
           onChange={(e) => setSport(e.target.value)}
           className="text-[14px] px-4 py-3.5 border border-black/8 dark:border-white/10 rounded-[12px] bg-[#f7f7f5] dark:bg-white/5 text-foreground dark:text-white outline-none focus:border-brand dark:focus:border-brand focus:bg-white dark:focus:bg-white/10 transition-all duration-200 font-sans appearance-none cursor-pointer w-full"
@@ -1167,9 +1167,9 @@ function ContactForm() {
         disabled={status !== "idle"}
         className="w-full py-4 rounded-full bg-brand text-white text-[14px] font-medium tracking-[.06em] cursor-pointer hover:bg-brand-hover hover:scale-[1.01] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed font-sans flex items-center justify-center gap-2 shadow-sm"
       >
-        {status === "idle"    && (<>Send Message <ChevronRight size={16} /></>)}
+        {status === "idle" && (<>Send Message <ChevronRight size={16} /></>)}
         {status === "sending" && "Sending..."}
-        {status === "done"    && "✓ Message sent!"}
+        {status === "done" && "✓ Message sent!"}
       </button>
     </form>
   );

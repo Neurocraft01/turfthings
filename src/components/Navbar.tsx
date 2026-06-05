@@ -22,10 +22,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "About", href: "/about" },
+    { name: "Home", href: "/" },
+    { name: "About", href: "/#about" },
     { name: "Timing & Rates", href: "/#timing" },
     { name: "Gallery", href: "/gallery" },
-    { name: "Contact", href: "/contact" },
+    { name: "Contact", href: "/#contact" },
   ];
 
   /* Hero mode = home AND not yet scrolled */
@@ -51,10 +52,10 @@ export default function Navbar() {
       >
         <div className="max-w-[1400px] mx-auto h-full flex items-center justify-between gap-6">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0 no-underline">
+          <Link href="/" className="flex items-center flex-shrink-0 no-underline">
             <div
               className="relative overflow-hidden rounded-xl transition-all duration-500"
-              style={{ width: heroMode ? "72px" : "56px", height: heroMode ? "72px" : "56px" }}
+              style={{ width: heroMode ? "88px" : "68px", height: heroMode ? "88px" : "68px" }}
             >
               <Image
                 src="/logo.jpeg"
@@ -64,16 +65,6 @@ export default function Navbar() {
                 priority
               />
             </div>
-            <span
-              className="hidden sm:block font-display tracking-widest uppercase transition-all duration-500"
-              style={{
-                fontSize: heroMode ? "15px" : "13px",
-                color: "rgba(255,255,255,0.90)",
-                letterSpacing: "0.14em",
-              }}
-            >
-              Turf Things
-            </span>
           </Link>
 
           {/* Desktop nav links */}
