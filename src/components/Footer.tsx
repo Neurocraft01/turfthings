@@ -33,6 +33,7 @@ export default function Footer() {
                   alt="Turf Things Logo"
                   fill
                   className="object-contain"
+                  sizes="100px"
                 />
               </div>
             </Link>
@@ -161,13 +162,31 @@ export default function Footer() {
               </Link>
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <span className="text-[12px] text-white/50 font-medium">
               © {new Date().getFullYear()} Turf Things. All rights reserved.
             </span>
             <span className="text-[12px] text-white/50 font-medium">
               Made with <span className="text-brand">♥</span> in Pune
             </span>
+          </div>
+          <div className="mt-4 flex justify-center items-center">
+            <a
+              href="https://aksautomations.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-brand/50 hover:bg-brand/5 transition-all duration-300 no-underline"
+            >
+              <span className="text-[10px] tracking-[0.10em] uppercase text-white/30 font-medium group-hover:text-white/50 transition-colors duration-300">
+                Designed &amp; Developed by
+              </span>
+              <span className="text-[12px] font-semibold text-brand/70 group-hover:text-brand transition-colors duration-300 tracking-[0.04em]">
+                AKS Automations
+              </span>
+              <svg viewBox="0 0 12 12" className="w-3 h-3 text-brand/50 group-hover:text-brand group-hover:translate-x-0.5 transition-all duration-300" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M2 6h8M7 3l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
           </div>
         </div>
       </div>

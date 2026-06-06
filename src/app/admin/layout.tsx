@@ -11,7 +11,8 @@ import {
   MessageSquare,
   LogOut,
   Menu,
-  X
+  X,
+  Mail,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -47,6 +48,7 @@ export default function AdminLayout({
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "Content", href: "/admin/content", icon: ImageIcon },
     { name: "Contacts", href: "/admin/contacts", icon: MessageSquare },
+    { name: "Reports", href: "/admin/reports", icon: Mail },
   ];
 
   const handleLogout = () => {

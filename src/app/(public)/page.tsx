@@ -437,6 +437,7 @@ export default function Home() {
                   alt="Aerial view of our football turf"
                   fill
                   className="object-cover object-bottom"
+                  sizes="(max-width: 768px) 100vw, 600px"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-4 left-4 text-[11px] tracking-[.08em] uppercase text-white/90 font-medium flex items-center gap-1.5">
@@ -823,7 +824,7 @@ function InstagramCTA() {
     "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=400&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?q=80&w=400&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?q=80&w=400&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1551958219-acbc595aeeff?q=80&w=400&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=400&auto=format&fit=crop",
   ];
 
   return (
@@ -837,7 +838,7 @@ function InstagramCTA() {
         <div className="flex whitespace-nowrap" style={{ animation: "ticker-move 40s linear infinite" }}>
           {[...instaImages, ...instaImages, ...instaImages].map((img, i) => (
             <div key={i} className="relative w-[180px] h-[180px] md:w-[240px] md:h-[240px] mx-2 rounded-2xl overflow-hidden flex-shrink-0">
-              <Image src={img} alt="Sports turf" fill className="object-cover" />
+              <Image src={img} alt="Sports turf" fill className="object-cover" sizes="240px" />
             </div>
           ))}
         </div>
@@ -858,7 +859,7 @@ function InstagramCTA() {
             <Camera size={26} strokeWidth={1.5} />
           </div>
           <div className="w-[52px] h-[52px] rounded-2xl overflow-hidden relative border border-white/10 bg-white/5">
-            <Image src="/logo.jpeg" alt="Turf Things" fill className="object-cover" />
+            <Image src="/logo.jpeg" alt="Turf Things" fill className="object-cover" sizes="52px" />
           </div>
         </div>
 
@@ -985,8 +986,10 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
     return () => clearInterval(timer);
   }, [visible, displayReviews.length]);
 
+  const review = displayReviews[active];
+
   return (
-    <section className="py-24 md:py-28 px-6 md:px-12 overflow-hidden" style={{ background: "#0a1a0c" }}>
+    <section ref={ref} className="py-24 md:py-28 px-6 md:px-12 overflow-hidden" style={{ background: "#0a1a0c" }}>
       <div className="max-w-[1200px] mx-auto">
         {/* Header */}
         <Reveal>
@@ -1028,13 +1031,64 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
           </div>
         </Reveal>
 
-        {/* Cards grid */}
-        <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-          {displayReviews.map((review, i) => (
+        {/* ── Mobile: single auto-changing card carousel ── */}
+        <div className="block sm:hidden mb-8">
+          <div
+            key={active}
+            className="bg-white/5 rounded-2xl p-6 border border-brand/40"
+            style={{
+              animation: "fadeUp 0.5s cubic-bezier(.16,1,.3,1) forwards",
+            }}
+          >
+            <Quote size={26} className="text-brand/50 mb-4 flex-shrink-0" strokeWidth={1.5} />
+            <p className="text-[14px] text-white leading-relaxed font-light mb-6">
+              &ldquo;{review.text}&rdquo;
+            </p>
+            <div className="mb-4">
+              <Stars count={review.rating} />
+            </div>
+            <div className="flex items-center gap-3 border-t border-white/10 pt-4">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-display text-[18px] flex-shrink-0"
+                style={{ background: review.color }}
+              >
+                {review.avatar}
+              </div>
+              <div>
+                <div className="text-[14px] font-medium text-white">{review.name}</div>
+                <div className="text-[12px] text-white/60 font-light">{review.role}</div>
+              </div>
+              <div className="ml-auto">
+                <span
+                  className="text-[10px] tracking-[.08em] uppercase font-medium px-2.5 py-1 rounded-full text-white/90"
+                  style={{ background: "rgba(255,255,255,0.1)" }}
+                >
+                  {review.sport}
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* Mobile swipe hint */}
+          <div className="flex justify-center gap-2 mt-6">
+            {displayReviews.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActive(i)}
+                className={`rounded-full transition-all duration-300 border-none cursor-pointer ${
+                  active === i ? "w-6 h-2 bg-brand" : "w-2 h-2 bg-white/20"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ── Desktop: Cards grid ── */}
+        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+          {displayReviews.map((rev, i) => (
             <div
               key={i}
               onClick={() => setActive(i)}
-              className={`cursor-pointer ${i >= 3 && "hidden lg:block"} ${i === 2 && "hidden sm:block lg:block"} ${i === 1 && "hidden sm:block"} block`}
+              className="cursor-pointer"
               style={{
                 opacity: visible ? 1 : 0,
                 transform: visible ? "none" : "translateY(40px)",
@@ -1047,43 +1101,30 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
                   : "border-white/10 hover:border-brand/50"
                   }`}
               >
-                {/* Quote icon */}
-                <Quote
-                  size={26}
-                  className="text-brand/50 mb-4 flex-shrink-0"
-                  strokeWidth={1.5}
-                />
-
-                {/* Review text */}
+                <Quote size={26} className="text-brand/50 mb-4 flex-shrink-0" strokeWidth={1.5} />
                 <p className="text-[14px] text-white leading-relaxed font-light flex-1 mb-6">
-                  &ldquo;{review.text}&rdquo;
+                  &ldquo;{rev.text}&rdquo;
                 </p>
-
-                {/* Rating */}
                 <div className="mb-4">
-                  <Stars count={review.rating} />
+                  <Stars count={rev.rating} />
                 </div>
-
-                {/* Author */}
                 <div className="flex items-center gap-3 border-t border-white/10 pt-4">
                   <div
                     className="w-10 h-10 rounded-full flex items-center justify-center text-white font-display text-[18px] flex-shrink-0"
-                    style={{ background: review.color }}
+                    style={{ background: rev.color }}
                   >
-                    {review.avatar}
+                    {rev.avatar}
                   </div>
                   <div>
-                    <div className="text-[14px] font-medium text-white">{review.name}</div>
-                    <div className="text-[12px] text-white/60 font-light">{review.role}</div>
+                    <div className="text-[14px] font-medium text-white">{rev.name}</div>
+                    <div className="text-[12px] text-white/60 font-light">{rev.role}</div>
                   </div>
                   <div className="ml-auto">
                     <span
                       className="text-[10px] tracking-[.08em] uppercase font-medium px-2.5 py-1 rounded-full text-white/90"
-                      style={{
-                        background: "rgba(255,255,255,0.1)",
-                      }}
+                      style={{ background: "rgba(255,255,255,0.1)" }}
                     >
-                      {review.sport}
+                      {rev.sport}
                     </span>
                   </div>
                 </div>
@@ -1092,9 +1133,9 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
           ))}
         </div>
 
-        {/* Dot indicators */}
-        <div className="flex justify-center gap-2 mt-8">
-          {reviews.map((_, i) => (
+        {/* Desktop Dot indicators */}
+        <div className="hidden sm:flex justify-center gap-2 mt-8">
+          {displayReviews.map((_, i) => (
             <button
               key={i}
               onClick={() => setActive(i)}
@@ -1107,6 +1148,7 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
     </section>
   );
 }
+
 
 /* ── Gallery Filter ── */
 function GalleryFilter() {

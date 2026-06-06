@@ -39,18 +39,33 @@ export async function GET() {
       }
     }
 
-    // 2. Fetch gallery images — Seed if empty
+    // 2. Fetch gallery images — Seed if empty or has Unsplash URLs
     let gallery = await prisma.galleryImage.findMany({
       orderBy: { createdAt: 'desc' }
     });
-    if (gallery.length === 0) {
+    
+    const hasUnsplash = gallery.some(img => img.src.includes('unsplash.com'));
+    
+    if (gallery.length === 0 || hasUnsplash) {
       try {
+        if (hasUnsplash) {
+          await prisma.galleryImage.deleteMany({
+            where: {
+              src: {
+                contains: 'unsplash.com'
+              }
+            }
+          });
+        }
         await prisma.galleryImage.createMany({
           data: [
-            { src: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070", title: "Main Pitch", category: "Grounds" },
-            { src: "https://images.unsplash.com/photo-1524015368236-bbf6f72545b6?q=80&w=2070", title: "Night Lighting", category: "Grounds" },
-            { src: "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=2070", title: "Weekend Tournament", category: "Events" },
-            { src: "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?q=80&w=2070", title: "Match Kickoff", category: "Matches" }
+            { src: "/turf1.jpeg", title: "Football Ground", category: "Grounds" },
+            { src: "/turf2.jpg",  title: "Aerial View",     category: "Grounds" },
+            { src: "/turf3.jpg",  title: "Turf Surface",    category: "Grounds" },
+            { src: "/turf4.jpg",  title: "Cricket Pitch",   category: "Grounds" },
+            { src: "/turf5.jpg",  title: "Night Lights",    category: "Grounds" },
+            { src: "/turf6.jpg",  title: "5-a-Side Field",  category: "Grounds" },
+            { src: "/turf7.jpg",  title: "Turf Overview",   category: "Grounds" },
           ]
         });
         gallery = await prisma.galleryImage.findMany({ orderBy: { createdAt: 'desc' } });
