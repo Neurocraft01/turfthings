@@ -38,6 +38,11 @@ interface Booking {
   bookingStatus: BookingStatus;
   messageStatus: string | null;
   sport?: string;
+  paymentMethod?: string;
+  firstPaidAmount?: number;
+  firstPaymentMethod?: string;
+  secondPaidAmount?: number;
+  secondPaymentMethod?: string;
 }
 
 /* ─── Rate Schedule (matches home page defaults) ─── */
@@ -140,6 +145,7 @@ function NewBookingModal({
   const [slotStart, setSlotStart] = useState("18:00");
   const [totalSlots, setTotalSlots] = useState(4); // 2 hours default
   const [paidAmount, setPaidAmount] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState("Online");
   const [autoPrice, setAutoPrice] = useState(true);
   const [manualTotal, setManualTotal] = useState(0);
 
@@ -184,6 +190,7 @@ function NewBookingModal({
           totalSlots,
           totalAmount,
           paidAmount,
+          paymentMethod,
           bookingStatus: "confirmed",
         }),
       });
@@ -464,6 +471,29 @@ function NewBookingModal({
                 </div>
               </div>
 
+              {/* Payment Method */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Payment Method
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["Online", "Cash"] as const).map((method) => (
+                    <button
+                      key={method}
+                      type="button"
+                      onClick={() => setPaymentMethod(method)}
+                      className={`py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
+                        paymentMethod === method
+                          ? "border-brand bg-brand/5 text-brand"
+                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      }`}
+                    >
+                      {method === "Online" ? "💳 Online" : "💵 Cash"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Balance summary */}
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
@@ -655,6 +685,262 @@ function ExtendModal({
   );
 }
 
+/* ─── Edit Booking Modal ─── */
+function EditBookingModal({
+  booking,
+  onClose,
+  onSuccess,
+}: {
+  booking: Booking;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [playerName, setPlayerName] = useState(booking.playerName);
+  const [mobileNumber, setMobileNumber] = useState(booking.mobileNumber);
+  const [sport, setSport] = useState(booking.sport || "Football");
+  const [bookingStatus, setBookingStatus] = useState<BookingStatus>(booking.bookingStatus);
+  const [firstPaidAmount, setFirstPaidAmount] = useState(booking.firstPaidAmount ?? booking.paidAmount ?? 0);
+  const [firstPaymentMethod, setFirstPaymentMethod] = useState(booking.firstPaymentMethod ?? booking.paymentMethod ?? "Online");
+  const [secondPaidAmount, setSecondPaidAmount] = useState(booking.secondPaidAmount ?? 0);
+  const [secondPaymentMethod, setSecondPaymentMethod] = useState(booking.secondPaymentMethod ?? "Online");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const totalPaidAmount = firstPaidAmount + secondPaidAmount;
+  const remaining = Math.max(0, booking.totalAmount - totalPaidAmount);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!playerName || !mobileNumber) {
+      setError("Player name and mobile number are required.");
+      return;
+    }
+    setError("");
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/bookings/${booking.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerName,
+          mobileNumber,
+          sport,
+          bookingStatus,
+          firstPaidAmount,
+          firstPaymentMethod,
+          secondPaidAmount,
+          secondPaymentMethod,
+        }),
+      });
+      if (res.ok) {
+        onSuccess();
+        onClose();
+      } else {
+        const err = await res.json();
+        setError(err.error || "Failed to update booking");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-5 flex justify-between items-center">
+          <div>
+            <h2 className="text-white font-display text-lg uppercase tracking-wider">Edit Booking</h2>
+            <p className="text-gray-300 text-xs mt-0.5">Ref: #{booking.id.slice(-8).toUpperCase()}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-300 hover:text-white border-none bg-transparent cursor-pointer">
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+              Player Name
+            </label>
+            <input
+              type="text"
+              required
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brand"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+              Mobile Number
+            </label>
+            <input
+              type="tel"
+              required
+              value={mobileNumber}
+              onChange={(e) => setMobileNumber(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-brand"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                Sport
+              </label>
+              <select
+                value={sport}
+                onChange={(e) => setSport(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand bg-white"
+              >
+                <option value="Football">⚽ Football</option>
+                <option value="Cricket">🏏 Cricket</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                Status
+              </label>
+              <select
+                value={bookingStatus}
+                onChange={(e) => setBookingStatus(e.target.value as BookingStatus)}
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand bg-white"
+              >
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-100 pt-4 space-y-4">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Payment Details</h3>
+            
+            {/* First Payment */}
+            <div className="bg-gray-50/50 p-3.5 rounded-xl border border-gray-100 space-y-3">
+              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">1st Payment (Advance)</span>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Amount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={firstPaidAmount}
+                    onChange={(e) => setFirstPaidAmount(Number(e.target.value))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-brand"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Method
+                  </label>
+                  <select
+                    value={firstPaymentMethod}
+                    onChange={(e) => setFirstPaymentMethod(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-sm outline-none focus:border-brand"
+                  >
+                    <option value="Online">💳 Online</option>
+                    <option value="Cash">💵 Cash</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Second Payment */}
+            <div className="bg-gray-50/50 p-3.5 rounded-xl border border-gray-100 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">2nd Payment (Final)</span>
+                {booking.totalAmount - firstPaidAmount > 0 && secondPaidAmount === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSecondPaidAmount(booking.totalAmount - firstPaidAmount)}
+                    className="text-[10px] text-brand hover:underline font-semibold border-none bg-transparent cursor-pointer"
+                  >
+                    Set to Remaining (₹{booking.totalAmount - firstPaidAmount})
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Amount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={secondPaidAmount}
+                    onChange={(e) => setSecondPaidAmount(Number(e.target.value))}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-brand"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Method
+                  </label>
+                  <select
+                    value={secondPaymentMethod}
+                    onChange={(e) => setSecondPaymentMethod(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-sm outline-none focus:border-brand"
+                  >
+                    <option value="Online">💳 Online</option>
+                    <option value="Cash">💵 Cash</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Balance Summary */}
+            <div className="grid grid-cols-3 gap-3 text-center pt-2">
+              <div className="bg-gray-50 rounded-xl p-2.5 border border-gray-100">
+                <div className="text-[10px] text-gray-500 mb-0.5">Total</div>
+                <div className="text-sm font-bold text-gray-900">₹{booking.totalAmount}</div>
+              </div>
+              <div className="bg-green-50 rounded-xl p-2.5 border border-green-100">
+                <div className="text-[10px] text-green-600 mb-0.5">Total Paid</div>
+                <div className="text-sm font-bold text-green-700">₹{totalPaidAmount}</div>
+              </div>
+              <div className="bg-red-50 rounded-xl p-2.5 border border-red-100">
+                <div className="text-[10px] text-red-500 mb-0.5">Balance</div>
+                <div className="text-sm font-bold text-red-600">₹{remaining}</div>
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 text-red-700 text-xs rounded-xl px-4 py-2.5 border border-red-200">
+              {error}
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-600 hover:bg-gray-50 cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand-hover flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+            >
+              {submitting ? <Loader2 size={14} className="animate-spin" /> : null}
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 /* ════════════════════════════════════════════════ */
 export default function BookingsManagement() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -667,6 +953,7 @@ export default function BookingsManagement() {
 
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isExtendModalOpen, setIsExtendModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
@@ -733,6 +1020,13 @@ export default function BookingsManagement() {
         <ExtendModal
           booking={selectedBooking}
           onClose={() => setIsExtendModalOpen(false)}
+          onSuccess={fetchBookings}
+        />
+      )}
+      {isEditModalOpen && selectedBooking && (
+        <EditBookingModal
+          booking={selectedBooking}
+          onClose={() => setIsEditModalOpen(false)}
           onSuccess={fetchBookings}
         />
       )}
@@ -855,7 +1149,7 @@ export default function BookingsManagement() {
                         <Phone size={10} /> {booking.mobileNumber}
                       </div>
                       <div className="text-[10px] text-gray-300 mt-0.5 font-mono">
-                        #{booking.id.slice(0, 8)}
+                        #{booking.id.slice(-8).toUpperCase()}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -886,11 +1180,25 @@ export default function BookingsManagement() {
                         <span className="text-gray-400">Total</span>
                         <span className="font-bold text-foreground">₹{booking.totalAmount}</span>
                       </div>
-                      <div className="flex justify-between gap-3">
-                        <span className="text-gray-400">Paid</span>
-                        <span className="font-semibold text-green-600">₹{booking.paidAmount}</span>
-                      </div>
-                      <div className="flex justify-between gap-3">
+                      {(booking.firstPaidAmount ?? 0) > 0 && (
+                        <div className="flex justify-between gap-3 text-[11px]">
+                          <span className="text-gray-400">1st ({booking.firstPaymentMethod || 'Online'})</span>
+                          <span className="font-medium text-green-600">₹{booking.firstPaidAmount}</span>
+                        </div>
+                      )}
+                      {(booking.secondPaidAmount ?? 0) > 0 && (
+                        <div className="flex justify-between gap-3 text-[11px]">
+                          <span className="text-gray-400">2nd ({booking.secondPaymentMethod || 'Online'})</span>
+                          <span className="font-medium text-green-600">₹{booking.secondPaidAmount}</span>
+                        </div>
+                      )}
+                      {!(booking.firstPaidAmount ?? 0) && !(booking.secondPaidAmount ?? 0) && booking.paidAmount > 0 && (
+                        <div className="flex justify-between gap-3 text-[11px]">
+                          <span className="text-gray-400">Paid ({booking.paymentMethod || 'Online'})</span>
+                          <span className="font-medium text-green-600">₹{booking.paidAmount}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between gap-3 pt-1 border-t border-gray-100">
                         <span className="text-gray-400">Balance</span>
                         <span className="font-semibold text-red-500">₹{booking.remainingAmount}</span>
                       </div>
@@ -905,6 +1213,16 @@ export default function BookingsManagement() {
                             Confirm
                           </button>
                         )}
+                        <button
+                          onClick={() => {
+                            setSelectedBooking(booking);
+                            setIsEditModalOpen(true);
+                          }}
+                          disabled={booking.bookingStatus === "cancelled"}
+                          className="text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-40"
+                        >
+                          Edit
+                        </button>
                         <button
                           onClick={() => {
                             setSelectedBooking(booking);

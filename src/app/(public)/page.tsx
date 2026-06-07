@@ -12,6 +12,7 @@ import {
   Cloud,
   Moon,
   Phone,
+  MessageCircle,
   Camera,
   Mail,
   Clock,
@@ -887,20 +888,33 @@ function InstagramCTA() {
           Follow <strong className="font-medium text-white">@turf_things_</strong> on Instagram for match highlights, slot drops, and exclusive offers.
         </p>
 
-        <Link
-          href="https://instagram.com/turf_things_"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-brand text-white text-[13px] font-medium tracking-[.04em] no-underline hover:bg-brand-hover hover:scale-[1.04] transition-all duration-300 w-full sm:w-auto shadow-sm shadow-brand/20"
+        <div
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "none" : "translateY(20px)",
             transition: "opacity 0.8s cubic-bezier(.16,1,.3,1) .3s, transform 0.8s cubic-bezier(.16,1,.3,1) .3s",
           }}
         >
-          <Camera size={16} strokeWidth={2} />
-          Follow on Instagram
-        </Link>
+          <Link
+            href="https://instagram.com/turf_things_"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-brand text-white text-[13px] font-medium tracking-[.04em] no-underline hover:bg-brand-hover hover:scale-[1.04] transition-all duration-300 w-full sm:w-auto shadow-sm shadow-brand/20"
+          >
+            <Camera size={16} strokeWidth={2} />
+            Follow on Instagram
+          </Link>
+          <Link
+            href={process.env.NEXT_PUBLIC_WHATSAPP_COMMUNITY_LINK || "https://chat.whatsapp.com/K1L7xT9xZ9x7xT9xZ9x7xT"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-[#25D366] text-white text-[13px] font-medium tracking-[.04em] no-underline hover:bg-[#20ba56] hover:scale-[1.04] transition-all duration-300 w-full sm:w-auto shadow-sm shadow-emerald-500/20"
+          >
+            <MessageCircle size={16} strokeWidth={2} />
+            Join WhatsApp Community
+          </Link>
+        </div>
       </div>
     </section>
   );

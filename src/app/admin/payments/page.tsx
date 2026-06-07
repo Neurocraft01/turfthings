@@ -35,25 +35,55 @@ export default function PaymentsPage() {
         const bookingsList = data.bookings || [];
         
         // Map bookings to payments dynamically
-        const mappedPayments: Payment[] = bookingsList.map((booking: any) => {
-          let status: PaymentStatus = "Paid";
-          if (booking.remainingAmount > 0) {
-            status = booking.paidAmount > 0 ? "Partial" : "Unpaid";
-          }
-          if (booking.bookingStatus === "cancelled") {
-            status = "Unpaid";
+        const mappedPayments: Payment[] = bookingsList.flatMap((booking: any) => {
+          const list: Payment[] = [];
+          const hasPayments = (booking.firstPaidAmount ?? 0) > 0 || (booking.secondPaidAmount ?? 0) > 0;
+
+          // First Payment Row (Advance)
+          if ((booking.firstPaidAmount ?? 0) > 0 || !hasPayments) {
+            let status: PaymentStatus = "Paid";
+            if (booking.remainingAmount > 0) {
+              status = (booking.firstPaidAmount ?? booking.paidAmount ?? 0) > 0 ? "Partial" : "Unpaid";
+            }
+            if (booking.bookingStatus === "cancelled") {
+              status = "Unpaid";
+            }
+
+            list.push({
+              id: `PAY-${booking.id.slice(-6).toUpperCase()}-1`,
+              bookingId: booking.id.slice(-8).toUpperCase(),
+              customer: `${booking.playerName} (1st)`,
+              amount: booking.totalAmount,
+              paidAmount: booking.bookingStatus === "cancelled" ? 0 : (booking.firstPaidAmount ?? booking.paidAmount ?? 0),
+              status: booking.bookingStatus === "cancelled" ? "Unpaid" : status,
+              date: booking.bookingDate,
+              method: booking.firstPaymentMethod || booking.paymentMethod || (booking.paidAmount > 0 ? "Online" : "None")
+            });
           }
 
-          return {
-            id: `PAY-${booking.id.substring(0, 5).toUpperCase()}`,
-            bookingId: booking.id.substring(0, 8).toUpperCase(),
-            customer: booking.playerName,
-            amount: booking.totalAmount,
-            paidAmount: booking.bookingStatus === "cancelled" ? 0 : booking.paidAmount,
-            status: booking.bookingStatus === "cancelled" ? "Unpaid" : status,
-            date: booking.bookingDate,
-            method: booking.paidAmount > 0 ? "Online" : "None"
-          };
+          // Second Payment Row (Final)
+          if ((booking.secondPaidAmount ?? 0) > 0) {
+            let status: PaymentStatus = "Paid";
+            if (booking.remainingAmount > 0) {
+              status = "Partial";
+            }
+            if (booking.bookingStatus === "cancelled") {
+              status = "Unpaid";
+            }
+
+            list.push({
+              id: `PAY-${booking.id.slice(-6).toUpperCase()}-2`,
+              bookingId: booking.id.slice(-8).toUpperCase(),
+              customer: `${booking.playerName} (2nd)`,
+              amount: booking.totalAmount,
+              paidAmount: booking.bookingStatus === "cancelled" ? 0 : booking.secondPaidAmount,
+              status: booking.bookingStatus === "cancelled" ? "Unpaid" : status,
+              date: booking.bookingDate,
+              method: booking.secondPaymentMethod || "Online"
+            });
+          }
+
+          return list;
         });
 
         setPayments(mappedPayments);
@@ -72,7 +102,14 @@ export default function PaymentsPage() {
   );
 
   // Compute live summaries
-  const totalExpected = filteredPayments.reduce((sum, p) => sum + p.amount, 0);
+  const seenBookings = new Set<string>();
+  let totalExpected = 0;
+  filteredPayments.forEach(p => {
+    if (!seenBookings.has(p.bookingId)) {
+      seenBookings.add(p.bookingId);
+      totalExpected += p.amount;
+    }
+  });
   const totalCollected = filteredPayments.reduce((sum, p) => sum + p.paidAmount, 0);
   const outstandingBalance = totalExpected - totalCollected;
 

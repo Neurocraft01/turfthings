@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { format, subDays, parseISO } from 'date-fns';
+import { format, subDays, subMonths, parseISO } from 'date-fns';
 
 export async function GET() {
   try {
@@ -72,14 +72,21 @@ export async function GET() {
       { name: 'Unpaid', value: Math.round((unpaidCount / totalPayments) * 100) || 0, color: '#ef4444' }
     ];
 
-    // 8. Monthly Revenue Trend (computed per week of the current month)
-    // We'll generate a dummy trend based on actual data to keep the chart populated
-    const revenueData = [
-      { name: 'Week 1', revenue: Math.round(collectedAmount * 0.2) },
-      { name: 'Week 2', revenue: Math.round(collectedAmount * 0.3) },
-      { name: 'Week 3', revenue: Math.round(collectedAmount * 0.25) },
-      { name: 'Week 4', revenue: Math.round(collectedAmount * 0.25) },
-    ];
+    // 8. Monthly Revenue Trend (computed for the last 6 months)
+    const revenueData = [];
+    for (let i = 5; i >= 0; i--) {
+      const monthDate = subMonths(new Date(), i);
+      const monthKey = format(monthDate, 'yyyy-MM'); // e.g. "2026-06"
+      const monthName = format(monthDate, 'MMM yyyy'); // e.g. "Jun 2026"
+      
+      const monthBookings = activeBookings.filter(b => b.bookingDate.startsWith(monthKey));
+      const revenue = monthBookings.reduce((sum, b) => sum + b.paidAmount, 0);
+      
+      revenueData.push({
+        name: monthName,
+        revenue
+      });
+    }
 
     return NextResponse.json({
       stats: {

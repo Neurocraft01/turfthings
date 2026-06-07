@@ -16,7 +16,20 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
   try {
     const body = await request.json();
-    const { bookingStatus, extendSlots, additionalAmount, paidAmount } = body;
+    const { 
+      bookingStatus, 
+      extendSlots, 
+      additionalAmount, 
+      paidAmount,
+      playerName,
+      mobileNumber,
+      sport,
+      paymentMethod,
+      firstPaidAmount,
+      firstPaymentMethod,
+      secondPaidAmount,
+      secondPaymentMethod
+    } = body;
 
     // Fetch the existing booking
     const booking = await prisma.booking.findUnique({ where: { id } });
@@ -31,6 +44,57 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     if (bookingStatus && bookingStatus !== booking.bookingStatus) {
       updateData.bookingStatus = bookingStatus;
       if (bookingStatus === 'confirmed') willConfirm = true;
+    }
+
+    // Handle general details updates
+    if (playerName !== undefined) updateData.playerName = playerName;
+    if (mobileNumber !== undefined) {
+      updateData.mobileNumber = mobileNumber;
+      updateData.whatsappNumber = mobileNumber;
+    }
+    if (sport !== undefined) updateData.sport = sport;
+
+    // Handle split payment updates explicitly if provided
+    if (firstPaidAmount !== undefined) updateData.firstPaidAmount = firstPaidAmount;
+    if (firstPaymentMethod !== undefined) updateData.firstPaymentMethod = firstPaymentMethod;
+    if (secondPaidAmount !== undefined) updateData.secondPaidAmount = secondPaidAmount;
+    if (secondPaymentMethod !== undefined) updateData.secondPaymentMethod = secondPaymentMethod;
+
+    // Determine total paid amount and payment method
+    let finalPaidAmount = booking.paidAmount;
+    if (firstPaidAmount !== undefined || secondPaidAmount !== undefined) {
+      const fPaid = firstPaidAmount !== undefined ? firstPaidAmount : booking.firstPaidAmount;
+      const sPaid = secondPaidAmount !== undefined ? secondPaidAmount : booking.secondPaidAmount;
+      finalPaidAmount = fPaid + sPaid;
+      updateData.paidAmount = finalPaidAmount;
+      // Also update single paymentMethod field for backward compatibility
+      if (secondPaidAmount !== undefined && secondPaidAmount > 0) {
+        updateData.paymentMethod = secondPaymentMethod !== undefined ? secondPaymentMethod : booking.secondPaymentMethod;
+      } else {
+        updateData.paymentMethod = firstPaymentMethod !== undefined ? firstPaymentMethod : booking.firstPaymentMethod;
+      }
+    } else if (paidAmount !== undefined) {
+      // Fallback/backward compatibility: split single paidAmount
+      finalPaidAmount = paidAmount;
+      updateData.paidAmount = paidAmount;
+      if (booking.firstPaidAmount === 0) {
+        updateData.firstPaidAmount = paidAmount;
+        updateData.secondPaidAmount = 0;
+      } else {
+        updateData.firstPaidAmount = booking.firstPaidAmount;
+        updateData.secondPaidAmount = Math.max(0, paidAmount - booking.firstPaidAmount);
+      }
+      if (paymentMethod !== undefined) {
+        updateData.paymentMethod = paymentMethod;
+        if (updateData.secondPaidAmount > 0) {
+          updateData.secondPaymentMethod = paymentMethod;
+        } else {
+          updateData.firstPaymentMethod = paymentMethod;
+        }
+      }
+    } else if (paymentMethod !== undefined) {
+      updateData.paymentMethod = paymentMethod;
+      updateData.firstPaymentMethod = paymentMethod;
     }
 
     // Handle Extension
@@ -55,7 +119,6 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       const hasConflict = existingBookings.some((b: any) => {
         const bStart = timeToMinutes(b.slotStart);
         const bEnd = timeToMinutes(b.slotEnd);
-        // We only check if the new extended period overlaps (currentEndMins to newEndMins)
         return currentEndMins < bEnd && newEndMins > bStart;
       });
 
@@ -70,13 +133,10 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       updateData.totalSlots = booking.totalSlots + extendSlots;
       updateData.totalAmount = booking.totalAmount + additionalAmount;
       
-      const newPaidAmount = paidAmount !== undefined ? paidAmount : booking.paidAmount;
-      updateData.paidAmount = newPaidAmount;
-      updateData.remainingAmount = updateData.totalAmount - newPaidAmount;
-    } else if (paidAmount !== undefined) {
-      // Just updating payments
-      updateData.paidAmount = paidAmount;
-      updateData.remainingAmount = booking.totalAmount - paidAmount;
+      updateData.remainingAmount = updateData.totalAmount - finalPaidAmount;
+    } else {
+      const totalAmt = updateData.totalAmount !== undefined ? updateData.totalAmount : booking.totalAmount;
+      updateData.remainingAmount = totalAmt - finalPaidAmount;
     }
 
     const updatedBooking = await prisma.booking.update({

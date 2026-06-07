@@ -15,8 +15,8 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   PieChart,
   Pie,
   Cell,
@@ -102,7 +102,7 @@ export default function Dashboard() {
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm">
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-6">Weekly Bookings (Volume)</h2>
           <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <BarChart data={charts.bookingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} />
@@ -120,20 +120,38 @@ export default function Dashboard() {
 
         {/* Revenue Chart */}
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm">
-          <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-6">Revenue Trend (Monthly)</h2>
+          <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-6">Monthly Revenue (Last 6 Months)</h2>
           <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={charts.revenueData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <AreaChart data={charts.revenueData} margin={{ top: 10, right: 10, left: 15, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.01}/>
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} />
-                <YAxis stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
+                <YAxis 
+                  stroke="#6b7280" 
+                  tick={{ fill: '#6b7280' }} 
+                  axisLine={false} 
+                  tickLine={false} 
+                  domain={[0, (dataMax: number) => Math.max(dataMax || 0, 1000)]}
+                  tickFormatter={(val) => {
+                    const num = Number(val);
+                    if (isNaN(num)) return "";
+                    if (num >= 1000) return `₹${(num / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+                    return `₹${num}`;
+                  }} 
+                />
                 <Tooltip 
                   formatter={(value) => `₹${value}`}
                   contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb', borderRadius: '8px' }}
                   itemStyle={{ color: '#3b82f6' }}
                 />
-                <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} dot={{ r: 6, fill: '#ffffff', strokeWidth: 2 }} activeDot={{ r: 8 }} />
-              </LineChart>
+                <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#revenueGrad)" dot={{ r: 6, fill: '#ffffff', strokeWidth: 2 }} activeDot={{ r: 8 }} />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -145,7 +163,7 @@ export default function Dashboard() {
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm flex flex-col items-center">
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-2 w-full text-left">Sport Popularity</h2>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <PieChart>
                 <Pie
                   data={charts.sportsPopularity}
@@ -174,7 +192,7 @@ export default function Dashboard() {
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm flex flex-col items-center">
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-2 w-full text-left">Payment Statuses</h2>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <PieChart>
                 <Pie
                   data={charts.paymentMethods}

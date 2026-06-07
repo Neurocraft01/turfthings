@@ -229,7 +229,7 @@ export async function POST(request: Request) {
             'Paid (₹)':       b.paidAmount,
             'Balance (₹)':    b.remainingAmount,
             'Status':         b.bookingStatus.toUpperCase(),
-            'Booking ID':     b.id.substring(0, 8).toUpperCase(),
+            'Booking ID':     b.id.slice(-8).toUpperCase(),
           });
         });
 
@@ -249,7 +249,7 @@ export async function POST(request: Request) {
     /* ── Sheet 4: All Bookings (flat list) ── */
     const allRows = bookings.map((b, i) => ({
       'S.No':           i + 1,
-      'Booking ID':     b.id.substring(0, 8).toUpperCase(),
+      'Booking ID':     b.id.slice(-8).toUpperCase(),
       'Date':           b.bookingDate,
       'Day':            fmtDate(b.bookingDate),
       'Player Name':    b.playerName,

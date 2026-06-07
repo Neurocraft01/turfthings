@@ -16,10 +16,15 @@ model Booking {
   slotEnd          String   @map("slot_end")     // Format: HH:MM (24-hour)
   totalSlots       Int      @map("total_slots")
   totalAmount      Int      @map("total_amount")
-  paidAmount       Int      @map("paid_amount")
-  remainingAmount  Int      @map("remaining_amount")
-  bookingStatus    String   @map("booking_status") @default("pending") // "confirmed", "pending", "cancelled"
-  sport            String   @default("Football")
+  paidAmount          Int      @map("paid_amount")
+  remainingAmount     Int      @map("remaining_amount")
+  firstPaidAmount     Int      @default(0) @map("first_paid_amount")
+  firstPaymentMethod  String   @default("Online") @map("first_payment_method")
+  secondPaidAmount    Int      @default(0) @map("second_paid_amount")
+  secondPaymentMethod String   @default("Online") @map("second_payment_method")
+  bookingStatus       String   @map("booking_status") @default("pending") // "confirmed", "pending", "cancelled"
+  sport               String   @default("Football")
+  paymentMethod       String   @default("Online") @map("payment_method")
   whatsappNumber   String?  @map("whatsapp_number")
   messageStatus    String?  @map("message_status") // "sent", "failed", "pending"
   createdAt        DateTime @default(now()) @map("created_at")

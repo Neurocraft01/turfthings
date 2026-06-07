@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 
     const bookings = await prisma.booking.findMany({
       where,
-      orderBy: { slotStart: 'asc' }
+      orderBy: { createdAt: 'desc' }
     });
 
     return NextResponse.json({ bookings }, { status: 200 });
@@ -52,7 +52,8 @@ export async function POST(request: Request) {
       totalAmount,
       paidAmount,
       bookingStatus,
-      sport
+      sport,
+      paymentMethod
     } = body;
 
     // Validation: Check for slot conflict
@@ -96,8 +97,13 @@ export async function POST(request: Request) {
         totalAmount,
         paidAmount,
         remainingAmount,
+        firstPaidAmount: paidAmount || 0,
+        firstPaymentMethod: paymentMethod || 'Online',
+        secondPaidAmount: 0,
+        secondPaymentMethod: 'Online',
         bookingStatus: bookingStatus || 'pending',
         sport: sport || 'Football',
+        paymentMethod: paymentMethod || 'Online',
         whatsappNumber: mobileNumber, // Assuming standard mobile maps to WA
       }
     });
