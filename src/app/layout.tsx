@@ -23,9 +23,23 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Turf Things — Book Premium Grounds in Pune",
+  title: "Turf Things | Book Premium Sports Turf in Karvenagar, Pune",
   description:
-    "Book premium sports grounds in Pune — Football, Cricket, Badminton and more. Real-time availability, instant confirmation.",
+    "Book premium FIFA-standard sports turf in Karvenagar, Pune at Turf Things. Football & Cricket grounds available for booking near Dudhane Lawns, Sun Empire Road. Real-time slot availability, instant confirmation.",
+  keywords: [
+    "turf booking Pune",
+    "turf booking Karvenagar",
+    "sports turf Pune",
+    "football turf Karvenagar",
+    "cricket turf Karvenagar",
+    "book sports grounds Pune",
+    "Turf Things Pune",
+    "Dudhane lawns turf",
+    "Sun Empire Road turf"
+  ],
+  icons: {
+    icon: "/logo.jpeg",
+  },
 };
 
 export default function RootLayout({

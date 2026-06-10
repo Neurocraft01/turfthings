@@ -1,5 +1,11 @@
 import { Target, Shield, Zap, Users, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | Turf Things Pune",
+  description: "Learn more about Turf Things, the premium FIFA-standard sports turf located in Karvenagar, Pune. Discover our facilities, amenities, and mission.",
+};
 
 export default function AboutPage() {
   return (

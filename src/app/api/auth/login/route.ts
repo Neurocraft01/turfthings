@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
     }
 
-    // Auto-seed: Check if there are any admins in the database
+    // Auto-seed: Ensure the default admin exists
     let adminCount = 0;
     try {
       adminCount = await prisma.admin.count();
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
       try {
         await prisma.admin.create({
           data: {
-            username: 'admin',
-            password: 'admin123', // Match the UI demo credentials
+            username: 'turfthings999@gmail.com',
+            password: 'TurfThings123',
           },
         });
       } catch (seedErr) {
@@ -30,22 +30,12 @@ export async function POST(request: Request) {
       }
     }
 
+    // Ensure legacy 'admin' doesn't sneak in; if it does, it'll just fail standard auth.
+    
     // Find user in database
     let admin = await prisma.admin.findUnique({
       where: { username },
     });
-
-    // If username is admin, and it doesn't exist, OR it exists but password doesn't match,
-    // and the user provided a correct default password, dynamically update it.
-    if (username === 'admin' && (password === 'admin123' || password === 'Turfthings12')) {
-      if (!admin || admin.password !== password) {
-        admin = await prisma.admin.upsert({
-          where: { username: 'admin' },
-          update: { password },
-          create: { username: 'admin', password },
-        });
-      }
-    }
 
     if (!admin || admin.password !== password) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });

@@ -59,13 +59,13 @@ export async function GET() {
         }
         await prisma.galleryImage.createMany({
           data: [
-            { src: "/turf1.jpeg", title: "Football Ground", category: "Grounds" },
-            { src: "/turf2.jpg",  title: "Aerial View",     category: "Grounds" },
-            { src: "/turf3.jpg",  title: "Turf Surface",    category: "Grounds" },
-            { src: "/turf4.jpg",  title: "Cricket Pitch",   category: "Grounds" },
-            { src: "/turf5.jpg",  title: "Night Lights",    category: "Grounds" },
-            { src: "/turf6.jpg",  title: "5-a-Side Field",  category: "Grounds" },
-            { src: "/turf7.jpg",  title: "Turf Overview",   category: "Grounds" },
+            { src: "https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118551/turf_gallery/j71yzpypbtadbfdfwwya.jpg", title: "Football Ground", category: "Grounds" },
+            { src: "https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118553/turf_gallery/lvbdijqasfaaonrkzpey.jpg",  title: "Aerial View",     category: "Grounds" },
+            { src: "https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118554/turf_gallery/jfq4laizujbkbjvcae8t.jpg",  title: "Turf Surface",    category: "Grounds" },
+            { src: "https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118555/turf_gallery/cfrfpn806wppb6qyt10i.jpg",  title: "Cricket Pitch",   category: "Grounds" },
+            { src: "https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118558/turf_gallery/bdfwjlhwcf5bulzypxgk.jpg",  title: "Night Lights",    category: "Grounds" },
+            { src: "https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118559/turf_gallery/efhhmsvojodvupgjbxiq.jpg",  title: "5-a-Side Field",  category: "Grounds" },
+            { src: "https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118560/turf_gallery/rhprkenmkrtdgfmih6ii.jpg",  title: "Turf Overview",   category: "Grounds" },
           ]
         });
         gallery = await prisma.galleryImage.findMany({ orderBy: { createdAt: 'desc' } });

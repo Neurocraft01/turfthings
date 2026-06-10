@@ -1,4 +1,10 @@
 import { Star } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Player Reviews | Turf Things Pune",
+  description: "Read what players, weekend warriors, and tournament organizers in Pune say about Turf Things sports turf in Karvenagar. Over 120+ 5-star ratings!",
+};
 
 export default function ReviewsPage() {
   const reviews = [

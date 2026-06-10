@@ -20,6 +20,7 @@ import {
   Circle,
   Star,
   Quote,
+  Maximize,
 } from "lucide-react";
 
 import BookingSection from "@/components/BookingSection";
@@ -235,7 +236,7 @@ export default function Home() {
             className="w-full h-full object-cover"
             style={{ opacity: 0.85 }}
           >
-            <source src="/hero.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/dmgcmtg9q/video/upload/v1781118547/turf_gallery/t1wnki0zjcwezpdtfji2.mp4" type="video/mp4" />
           </video>
         </div>
         <div
@@ -389,6 +390,7 @@ export default function Home() {
                 { Icon: MapPin, title: "Near you always", desc: "Conveniently located across Pune" },
                 { Icon: ShieldCheck, title: "Verified grounds", desc: "Every turf inspected and rated by our team" },
                 { Icon: Trophy, title: "Cricket & Football", desc: "Two premium sports, one perfect ground" },
+                { Icon: Maximize, title: "Turf Dimension", desc: "Widget - 55 ft. Length - 95 ft." },
               ].map(({ Icon, title, desc }, i) => (
                 <div
                   key={i}
@@ -434,7 +436,7 @@ export default function Home() {
 
               <div className="col-span-2 rounded-[20px] overflow-hidden relative min-h-[240px] md:min-h-[300px]">
                 <Image
-                  src="/turf7.jpg"
+                  src="https://res.cloudinary.com/dmgcmtg9q/image/upload/v1781118560/turf_gallery/rhprkenmkrtdgfmih6ii.jpg"
                   alt="Aerial view of our football turf"
                   fill
                   className="object-cover object-bottom"
@@ -794,7 +796,7 @@ export default function Home() {
             {/* Google Maps Embed */}
             <div className="mt-8 rounded-2xl overflow-hidden border border-black/8 dark:border-white/10 shadow-sm" style={{ height: "220px" }}>
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.8979963254376!2d73.81267117507!3d18.497970082569!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf2c73d60e11%3A0xa765c4bec67c3c5c!2sTurf%20Things!5e0!3m2!1sen!2sin!4v1717600000000!5m2!1sen!2sin"
+                src="https://maps.google.com/maps?q=18.4817678,73.8154535&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -1023,7 +1025,7 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
             {/* Overall rating badge */}
             <div className="flex items-center gap-5 bg-white/5 rounded-2xl px-6 py-5 border border-white/10 w-full md:w-auto justify-center md:justify-start">
               <div>
-                <div className="font-display text-[48px] leading-none text-white tracking-tight">4.9</div>
+                <div className="font-display text-[48px] leading-none text-white tracking-tight">4.8</div>
                 <div className="mt-1"><Stars /></div>
                 <div className="text-[11px] text-white/60 font-light mt-1.5 tracking-[.04em]">120+ reviews</div>
               </div>
@@ -1088,9 +1090,8 @@ function ReviewsSection({ reviews: customReviews }: { reviews?: DynReview[] }) {
               <button
                 key={i}
                 onClick={() => setActive(i)}
-                className={`rounded-full transition-all duration-300 border-none cursor-pointer ${
-                  active === i ? "w-6 h-2 bg-brand" : "w-2 h-2 bg-white/20"
-                }`}
+                className={`rounded-full transition-all duration-300 border-none cursor-pointer ${active === i ? "w-6 h-2 bg-brand" : "w-2 h-2 bg-white/20"
+                  }`}
               />
             ))}
           </div>

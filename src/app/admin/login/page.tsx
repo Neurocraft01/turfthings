@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Lock } from "lucide-react";
 
 export default function AdminLogin() {
@@ -59,14 +60,14 @@ export default function AdminLogin() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Username</label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
             <input 
               type="text" 
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-background border border-card-border rounded-md px-4 py-3 text-foreground focus:outline-none focus:border-brand transition-colors"
-              placeholder="Enter username"
+              placeholder="Enter email address"
             />
           </div>
           <div>
@@ -88,8 +89,10 @@ export default function AdminLogin() {
           </button>
         </form>
         
-        <div className="mt-6 text-center text-xs text-gray-500">
-          <p>Demo Credentials: admin / admin123</p>
+        <div className="mt-6 text-center text-sm">
+          <Link href="/admin/forgot-password" className="text-brand hover:underline transition-all">
+            Forgot Password?
+          </Link>
         </div>
       </div>
     </div>
