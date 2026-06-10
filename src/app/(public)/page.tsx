@@ -770,7 +770,7 @@ export default function Home() {
 
             <div className="flex flex-col gap-5">
               {[
-                { Icon: MapPin, label: "Location", val: "Old Dudhane Lawns, 52, Sun Empire Rd, Karvenagar, Pune, Maharashtra 411052", href: "https://maps.app.goo.gl/NBPFY7NWae4ZCjjt7" },
+                { Icon: MapPin, label: "Location", val: "Old Dudhane Lawns, 52, Sun Empire Rd, Karvenagar, Pune, Maharashtra 411052", href: "https://maps.app.goo.gl/5Nm8FKuDMgAsXBrH7" },
                 { Icon: Phone, label: "Phone", val: "+91 70304 99191", href: "tel:7030499191" },
                 { Icon: Mail, label: "Email", val: "turfthings999@gmail.com", href: "mailto:turfthings999@gmail.com" },
                 { Icon: Clock, label: "Open Hours", val: "Daily 24/7" },
@@ -796,7 +796,7 @@ export default function Home() {
             {/* Google Maps Embed */}
             <div className="mt-8 rounded-2xl overflow-hidden border border-black/8 dark:border-white/10 shadow-sm" style={{ height: "220px" }}>
               <iframe
-                src="https://maps.google.com/maps?q=18.4817678,73.8154535&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=18.4817695,73.8154643&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
