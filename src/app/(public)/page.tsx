@@ -299,11 +299,18 @@ export default function Home() {
             }}
           >
             <button
-              onClick={() => document.getElementById("timing")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => document.getElementById("book")?.scrollIntoView({ behavior: "smooth" })}
               className="inline-flex items-center justify-center gap-2 text-[13px] font-medium px-8 py-3.5 rounded-full bg-brand text-white border-none cursor-pointer tracking-[0.04em] hover:bg-brand-hover hover:scale-[1.04] transition-all duration-200 w-full sm:w-auto"
             >
-              View Timings &amp; Rates
+              Book Now
               <ChevronRight size={14} />
+            </button>
+            <button
+              onClick={() => document.getElementById("timing")?.scrollIntoView({ behavior: "smooth" })}
+              className="text-[13px] font-normal px-7 py-3.5 rounded-full text-white/80 border border-white/20 cursor-pointer tracking-[0.04em] hover:bg-white/18 hover:text-white transition-all duration-200 w-full sm:w-auto"
+              style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(4px)" }}
+            >
+              View Timings
             </button>
             <button
               onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
