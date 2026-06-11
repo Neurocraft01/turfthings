@@ -80,7 +80,7 @@ export default function AdminLayout({
             </span>
           </div>
 
-          <div className="flex-1 overflow-y-auto py-6 px-4">
+          <div className="flex-1 overflow-y-auto pt-20 md:pt-6 pb-6 px-4">
             <nav className="space-y-2">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;

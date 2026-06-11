@@ -61,10 +61,17 @@ function getPriceForHour(hour: number) {
 }
 
 function calcAutoPrice(startTime: string, totalSlots: number): number {
-  const [h] = startTime.split(":").map(Number);
-  const pricePerHour = getPriceForHour(h);
-  const hours = (totalSlots * 30) / 60;
-  return Math.round(pricePerHour * hours);
+  let [h, m] = startTime.split(":").map(Number);
+  let totalCost = 0;
+  for (let i = 0; i < totalSlots; i++) {
+    totalCost += getPriceForHour(h) / 2;
+    m += 30;
+    if (m >= 60) {
+      h = (h + 1) % 24;
+      m -= 60;
+    }
+  }
+  return Math.round(totalCost);
 }
 
 function formatTime12h(time24: string) {
