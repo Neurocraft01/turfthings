@@ -14,8 +14,12 @@ export const sendWhatsAppMessage = async (to: string, message: string) => {
   }
 
   try {
-    // Twilio WhatsApp numbers must be prefixed with 'whatsapp:'
-    const toFormatted = to.startsWith('whatsapp:') ? to : `whatsapp:${to.replace(/\s+/g, '')}`;
+    // Format number to add +91 if it's 10 digits without country code
+    let cleanNumber = to.replace(/\s+/g, '');
+    if (/^\d{10}$/.test(cleanNumber)) {
+      cleanNumber = `+91${cleanNumber}`;
+    }
+    const toFormatted = cleanNumber.startsWith('whatsapp:') ? cleanNumber : `whatsapp:${cleanNumber}`;
     const fromFormatted = twilioWhatsAppNumber.startsWith('whatsapp:') 
       ? twilioWhatsAppNumber 
       : `whatsapp:${twilioWhatsAppNumber}`;
