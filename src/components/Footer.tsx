@@ -183,6 +183,9 @@ export default function Footer() {
               <span className="text-[12px] font-semibold text-brand/70 group-hover:text-brand transition-colors duration-300 tracking-[0.04em]">
                 AKS Automations
               </span>
+              <span className="text-[12px] font-semibold text-brand/70 group-hover:text-brand transition-colors duration-300 tracking-[0.04em]">
+                & Virtus
+              </span>
               <svg viewBox="0 0 12 12" className="w-3 h-3 text-brand/50 group-hover:text-brand group-hover:translate-x-0.5 transition-all duration-300" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 6h8M7 3l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
