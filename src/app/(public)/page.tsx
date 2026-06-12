@@ -865,9 +865,9 @@ function InstagramCTA() {
             transition: "opacity 0.8s cubic-bezier(.16,1,.3,1), transform 0.8s cubic-bezier(.16,1,.3,1)",
           }}
         >
-          <div className="w-[52px] h-[52px] rounded-2xl bg-white/10 flex items-center justify-center text-white">
+          {/* <div className="w-[52px] h-[52px] rounded-2xl bg-white/10 flex items-center justify-center text-white">
             <Camera size={26} strokeWidth={1.5} />
-          </div>
+          </div> */}
           <div className="w-[52px] h-[52px] rounded-2xl overflow-hidden relative border border-white/10 bg-white/5">
             <Image src="/logo.jpeg" alt="Turf Things" fill className="object-cover" sizes="52px" />
           </div>
