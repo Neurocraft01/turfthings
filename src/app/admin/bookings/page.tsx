@@ -107,6 +107,13 @@ const DURATION_OPTIONS = [
   { slots: 6,  label: "3 Hours" },
   { slots: 8,  label: "4 Hours" },
   { slots: 12, label: "6 Hours" },
+  { slots: 16, label: "8 Hours" },
+  { slots: 20, label: "10 Hours" },
+  { slots: 24, label: "12 Hours" },
+  { slots: 30, label: "15 Hours" },
+  { slots: 36, label: "18 Hours" },
+  { slots: 40, label: "20 Hours" },
+  { slots: 48, label: "24 Hours" },
 ];
 
 /* ─── Status Badge ─── */

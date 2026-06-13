@@ -91,6 +91,9 @@ export async function GET() {
     if (!existingKeys.includes('pricing_weekend')) {
       toSeed.push({ key: 'pricing_weekend', value: JSON.stringify(DEFAULT_PRICING.weekend) });
     }
+    if (!existingKeys.includes('night_booking_enabled')) {
+      toSeed.push({ key: 'night_booking_enabled', value: 'true' });
+    }
 
     if (toSeed.length > 0) {
       try {
@@ -109,16 +112,21 @@ export async function GET() {
     // Parse pricing JSON safely
     let pricing_weekday = DEFAULT_PRICING.weekday;
     let pricing_weekend = DEFAULT_PRICING.weekend;
+    let night_booking_enabled = true;
     try {
       if (pageContent.pricing_weekday) pricing_weekday = JSON.parse(pageContent.pricing_weekday);
       if (pageContent.pricing_weekend) pricing_weekend = JSON.parse(pageContent.pricing_weekend);
+      if (pageContent.night_booking_enabled !== undefined) {
+        night_booking_enabled = pageContent.night_booking_enabled === 'true';
+      }
     } catch { /* keep defaults */ }
 
     return NextResponse.json({
       reviews,
       gallery,
       pageContent,
-      pricing: { weekday: pricing_weekday, weekend: pricing_weekend }
+      pricing: { weekday: pricing_weekday, weekend: pricing_weekend },
+      night_booking_enabled
     }, { status: 200 });
 
   } catch (error) {
@@ -171,13 +179,14 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { mission, vision, pricing_weekday, pricing_weekend } = body;
+    const { mission, vision, pricing_weekday, pricing_weekend, night_booking_enabled } = body;
 
     const updates: { key: string; value: string }[] = [];
     if (mission !== undefined) updates.push({ key: 'mission', value: mission });
     if (vision !== undefined) updates.push({ key: 'vision', value: vision });
     if (pricing_weekday !== undefined) updates.push({ key: 'pricing_weekday', value: JSON.stringify(pricing_weekday) });
     if (pricing_weekend !== undefined) updates.push({ key: 'pricing_weekend', value: JSON.stringify(pricing_weekend) });
+    if (night_booking_enabled !== undefined) updates.push({ key: 'night_booking_enabled', value: String(night_booking_enabled) });
 
     for (const { key, value } of updates) {
       await prisma.siteContent.upsert({

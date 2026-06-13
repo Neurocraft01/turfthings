@@ -147,6 +147,7 @@ export default function Home() {
   const [dynGallery, setDynGallery] = useState<any[]>([]);
   const [weekdayRates, setWeekdayRates] = useState(DEFAULT_WEEKDAY_RATES);
   const [weekendRates, setWeekendRates] = useState(DEFAULT_WEEKEND_RATES);
+  const [nightBookingEnabled, setNightBookingEnabled] = useState(true);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -158,6 +159,7 @@ export default function Home() {
           if (data.gallery && data.gallery.length > 0) setDynGallery(data.gallery);
           if (data.pricing?.weekday?.length > 0) setWeekdayRates(data.pricing.weekday);
           if (data.pricing?.weekend?.length > 0) setWeekendRates(data.pricing.weekend);
+          if (data.night_booking_enabled !== undefined) setNightBookingEnabled(data.night_booking_enabled);
         }
       } catch (err) {
         console.error("Failed to fetch content:", err);
@@ -198,7 +200,9 @@ export default function Home() {
     };
   }, []);
 
-  const rates = dayMode === "week" ? weekdayRates : weekendRates;
+  const rates = (dayMode === "week" ? weekdayRates : weekendRates).filter(
+    rate => nightBookingEnabled || rate.period !== "Late Night"
+  );
 
   const tickerItems = [
     "Football", "Cricket", "Football", "Cricket",
@@ -694,7 +698,7 @@ export default function Home() {
       </section>
 
       {/* ══ LIVE BOOKING CALENDAR ═══════════════════════════ */}
-      <BookingSection />
+      <BookingSection disableLateNight={!nightBookingEnabled} />
 
       {/* ══ INSTAGRAM CTA (Olive Green w/ Marquee) ════════════ */}
       <InstagramCTA />

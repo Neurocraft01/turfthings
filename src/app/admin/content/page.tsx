@@ -427,6 +427,7 @@ export default function ContentManagementPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [mission, setMission] = useState("");
   const [vision, setVision] = useState("");
+  const [nightBookingEnabled, setNightBookingEnabled] = useState(true);
   const [weekdayRates, setWeekdayRates] = useState<PricingSlot[]>([]);
   const [weekendRates, setWeekendRates] = useState<PricingSlot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -456,6 +457,7 @@ export default function ContentManagementPage() {
         setReviews(data.reviews || []);
         setMission(data.pageContent?.mission || "");
         setVision(data.pageContent?.vision || "");
+        setNightBookingEnabled(data.night_booking_enabled ?? true);
         setWeekdayRates(data.pricing?.weekday || []);
         setWeekendRates(data.pricing?.weekend || []);
       }
@@ -543,10 +545,10 @@ export default function ContentManagementPage() {
       const res = await fetch("/api/content", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mission, vision }),
+        body: JSON.stringify({ mission, vision, night_booking_enabled: nightBookingEnabled }),
       });
       if (res.ok) {
-        showToast("success", "Mission & Vision updated!");
+        showToast("success", "Page content updated!");
       } else {
         showToast("error", "Failed to save.");
       }
@@ -872,13 +874,29 @@ export default function ContentManagementPage() {
         {activeTab === "pages" && (
           <div className="animate-in fade-in">
             <div className="mb-6">
-              <h2 className="font-display text-2xl text-foreground uppercase">About Page Text</h2>
+              <h2 className="font-display text-2xl text-foreground uppercase">Global Settings &amp; About Page</h2>
               <p className="text-gray-400 text-sm mt-0.5">
-                Edit the mission &amp; vision statements shown on the home page About section.
+                Edit global site settings and the mission &amp; vision statements.
               </p>
             </div>
 
-            <div className="space-y-5 max-w-3xl">
+            <div className="space-y-6 max-w-3xl">
+              <div className="bg-background border border-card-border rounded-xl p-5 flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-foreground">Night Booking</h3>
+                  <p className="text-sm text-gray-500 mt-1">Enable or disable late-night booking slots (12 AM - 5 AM) on the landing page.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={nightBookingEnabled}
+                    onChange={(e) => setNightBookingEnabled(e.target.checked)}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                </label>
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2">
                   Mission Statement
