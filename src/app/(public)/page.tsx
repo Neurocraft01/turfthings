@@ -147,6 +147,9 @@ export default function Home() {
   const [dynGallery, setDynGallery] = useState<any[]>([]);
   const [weekdayRates, setWeekdayRates] = useState(DEFAULT_WEEKDAY_RATES);
   const [weekendRates, setWeekendRates] = useState(DEFAULT_WEEKEND_RATES);
+  const [morningBookingEnabled, setMorningBookingEnabled] = useState(true);
+  const [afternoonBookingEnabled, setAfternoonBookingEnabled] = useState(true);
+  const [eveningBookingEnabled, setEveningBookingEnabled] = useState(true);
   const [nightBookingEnabled, setNightBookingEnabled] = useState(true);
 
   useEffect(() => {
@@ -159,6 +162,9 @@ export default function Home() {
           if (data.gallery && data.gallery.length > 0) setDynGallery(data.gallery);
           if (data.pricing?.weekday?.length > 0) setWeekdayRates(data.pricing.weekday);
           if (data.pricing?.weekend?.length > 0) setWeekendRates(data.pricing.weekend);
+          if (data.morning_booking_enabled !== undefined) setMorningBookingEnabled(data.morning_booking_enabled);
+          if (data.afternoon_booking_enabled !== undefined) setAfternoonBookingEnabled(data.afternoon_booking_enabled);
+          if (data.evening_booking_enabled !== undefined) setEveningBookingEnabled(data.evening_booking_enabled);
           if (data.night_booking_enabled !== undefined) setNightBookingEnabled(data.night_booking_enabled);
         }
       } catch (err) {
@@ -201,7 +207,13 @@ export default function Home() {
   }, []);
 
   const rates = (dayMode === "week" ? weekdayRates : weekendRates).filter(
-    rate => nightBookingEnabled || rate.period !== "Late Night"
+    rate => {
+      if (rate.period === "Morning") return morningBookingEnabled;
+      if (rate.period === "Afternoon") return afternoonBookingEnabled;
+      if (rate.period === "Evening") return eveningBookingEnabled;
+      if (rate.period === "Late Night") return nightBookingEnabled;
+      return true;
+    }
   );
 
   const tickerItems = [
@@ -698,7 +710,12 @@ export default function Home() {
       </section>
 
       {/* ══ LIVE BOOKING CALENDAR ═══════════════════════════ */}
-      <BookingSection disableLateNight={!nightBookingEnabled} />
+      <BookingSection 
+        disableMorning={!morningBookingEnabled}
+        disableAfternoon={!afternoonBookingEnabled}
+        disableEvening={!eveningBookingEnabled}
+        disableLateNight={!nightBookingEnabled} 
+      />
 
       {/* ══ INSTAGRAM CTA (Olive Green w/ Marquee) ════════════ */}
       <InstagramCTA />

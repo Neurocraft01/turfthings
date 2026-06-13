@@ -44,7 +44,17 @@ const getPeriodLabel = (slot: string) => {
 };
 
 /* ── Main Component ────────────────────────────────────── */
-export default function BookingSection({ disableLateNight = false }: { disableLateNight?: boolean }) {
+export default function BookingSection({ 
+  disableMorning = false,
+  disableAfternoon = false,
+  disableEvening = false,
+  disableLateNight = false 
+}: { 
+  disableMorning?: boolean,
+  disableAfternoon?: boolean,
+  disableEvening?: boolean,
+  disableLateNight?: boolean 
+}) {
   const today = startOfToday();
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -107,7 +117,13 @@ export default function BookingSection({ disableLateNight = false }: { disableLa
     { key: "Evening", hours: [17, 18, 19, 20, 21, 22, 23], color: "#27a84e", bg: "rgba(39,168,78,0.08)" },
   ];
   
-  const PERIODS = disableLateNight ? ALL_PERIODS.filter(p => p.key !== "Late Night") : ALL_PERIODS;
+  const PERIODS = ALL_PERIODS.filter(p => {
+    if (p.key === "Morning") return !disableMorning;
+    if (p.key === "Afternoon") return !disableAfternoon;
+    if (p.key === "Evening") return !disableEvening;
+    if (p.key === "Late Night") return !disableLateNight;
+    return true;
+  });
 
   return (
     <section

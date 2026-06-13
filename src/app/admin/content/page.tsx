@@ -427,6 +427,9 @@ export default function ContentManagementPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [mission, setMission] = useState("");
   const [vision, setVision] = useState("");
+  const [morningBookingEnabled, setMorningBookingEnabled] = useState(true);
+  const [afternoonBookingEnabled, setAfternoonBookingEnabled] = useState(true);
+  const [eveningBookingEnabled, setEveningBookingEnabled] = useState(true);
   const [nightBookingEnabled, setNightBookingEnabled] = useState(true);
   const [weekdayRates, setWeekdayRates] = useState<PricingSlot[]>([]);
   const [weekendRates, setWeekendRates] = useState<PricingSlot[]>([]);
@@ -457,6 +460,9 @@ export default function ContentManagementPage() {
         setReviews(data.reviews || []);
         setMission(data.pageContent?.mission || "");
         setVision(data.pageContent?.vision || "");
+        setMorningBookingEnabled(data.morning_booking_enabled ?? true);
+        setAfternoonBookingEnabled(data.afternoon_booking_enabled ?? true);
+        setEveningBookingEnabled(data.evening_booking_enabled ?? true);
         setNightBookingEnabled(data.night_booking_enabled ?? true);
         setWeekdayRates(data.pricing?.weekday || []);
         setWeekendRates(data.pricing?.weekend || []);
@@ -545,7 +551,14 @@ export default function ContentManagementPage() {
       const res = await fetch("/api/content", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mission, vision, night_booking_enabled: nightBookingEnabled }),
+        body: JSON.stringify({ 
+          mission, 
+          vision, 
+          morning_booking_enabled: morningBookingEnabled,
+          afternoon_booking_enabled: afternoonBookingEnabled,
+          evening_booking_enabled: eveningBookingEnabled,
+          night_booking_enabled: nightBookingEnabled 
+        }),
       });
       if (res.ok) {
         showToast("success", "Page content updated!");
@@ -881,20 +894,50 @@ export default function ContentManagementPage() {
             </div>
 
             <div className="space-y-6 max-w-3xl">
-              <div className="bg-background border border-card-border rounded-xl p-5 flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-foreground">Night Booking</h3>
-                  <p className="text-sm text-gray-500 mt-1">Enable or disable late-night booking slots (12 AM - 5 AM) on the landing page.</p>
+              <div className="bg-background border border-card-border rounded-xl p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-foreground">Morning Booking</h3>
+                    <p className="text-sm text-gray-500 mt-1">Enable or disable morning slots (5 AM - 12 PM).</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={morningBookingEnabled} onChange={(e) => setMorningBookingEnabled(e.target.checked)} />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                  </label>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={nightBookingEnabled}
-                    onChange={(e) => setNightBookingEnabled(e.target.checked)}
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
-                </label>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-foreground">Afternoon Booking</h3>
+                    <p className="text-sm text-gray-500 mt-1">Enable or disable afternoon slots (12 PM - 5 PM).</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={afternoonBookingEnabled} onChange={(e) => setAfternoonBookingEnabled(e.target.checked)} />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-foreground">Evening Booking</h3>
+                    <p className="text-sm text-gray-500 mt-1">Enable or disable evening slots (5 PM - 12 AM).</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={eveningBookingEnabled} onChange={(e) => setEveningBookingEnabled(e.target.checked)} />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-foreground">Night Booking</h3>
+                    <p className="text-sm text-gray-500 mt-1">Enable or disable late-night slots (12 AM - 5 AM).</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={nightBookingEnabled} onChange={(e) => setNightBookingEnabled(e.target.checked)} />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                  </label>
+                </div>
               </div>
 
               <div>

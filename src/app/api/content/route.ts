@@ -91,6 +91,15 @@ export async function GET() {
     if (!existingKeys.includes('pricing_weekend')) {
       toSeed.push({ key: 'pricing_weekend', value: JSON.stringify(DEFAULT_PRICING.weekend) });
     }
+    if (!existingKeys.includes('morning_booking_enabled')) {
+      toSeed.push({ key: 'morning_booking_enabled', value: 'true' });
+    }
+    if (!existingKeys.includes('afternoon_booking_enabled')) {
+      toSeed.push({ key: 'afternoon_booking_enabled', value: 'true' });
+    }
+    if (!existingKeys.includes('evening_booking_enabled')) {
+      toSeed.push({ key: 'evening_booking_enabled', value: 'true' });
+    }
     if (!existingKeys.includes('night_booking_enabled')) {
       toSeed.push({ key: 'night_booking_enabled', value: 'true' });
     }
@@ -112,10 +121,22 @@ export async function GET() {
     // Parse pricing JSON safely
     let pricing_weekday = DEFAULT_PRICING.weekday;
     let pricing_weekend = DEFAULT_PRICING.weekend;
+    let morning_booking_enabled = true;
+    let afternoon_booking_enabled = true;
+    let evening_booking_enabled = true;
     let night_booking_enabled = true;
     try {
       if (pageContent.pricing_weekday) pricing_weekday = JSON.parse(pageContent.pricing_weekday);
       if (pageContent.pricing_weekend) pricing_weekend = JSON.parse(pageContent.pricing_weekend);
+      if (pageContent.morning_booking_enabled !== undefined) {
+        morning_booking_enabled = pageContent.morning_booking_enabled === 'true';
+      }
+      if (pageContent.afternoon_booking_enabled !== undefined) {
+        afternoon_booking_enabled = pageContent.afternoon_booking_enabled === 'true';
+      }
+      if (pageContent.evening_booking_enabled !== undefined) {
+        evening_booking_enabled = pageContent.evening_booking_enabled === 'true';
+      }
       if (pageContent.night_booking_enabled !== undefined) {
         night_booking_enabled = pageContent.night_booking_enabled === 'true';
       }
@@ -126,6 +147,9 @@ export async function GET() {
       gallery,
       pageContent,
       pricing: { weekday: pricing_weekday, weekend: pricing_weekend },
+      morning_booking_enabled,
+      afternoon_booking_enabled,
+      evening_booking_enabled,
       night_booking_enabled
     }, { status: 200 });
 
@@ -179,13 +203,16 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { mission, vision, pricing_weekday, pricing_weekend, night_booking_enabled } = body;
+    const { mission, vision, pricing_weekday, pricing_weekend, morning_booking_enabled, afternoon_booking_enabled, evening_booking_enabled, night_booking_enabled } = body;
 
     const updates: { key: string; value: string }[] = [];
     if (mission !== undefined) updates.push({ key: 'mission', value: mission });
     if (vision !== undefined) updates.push({ key: 'vision', value: vision });
     if (pricing_weekday !== undefined) updates.push({ key: 'pricing_weekday', value: JSON.stringify(pricing_weekday) });
     if (pricing_weekend !== undefined) updates.push({ key: 'pricing_weekend', value: JSON.stringify(pricing_weekend) });
+    if (morning_booking_enabled !== undefined) updates.push({ key: 'morning_booking_enabled', value: String(morning_booking_enabled) });
+    if (afternoon_booking_enabled !== undefined) updates.push({ key: 'afternoon_booking_enabled', value: String(afternoon_booking_enabled) });
+    if (evening_booking_enabled !== undefined) updates.push({ key: 'evening_booking_enabled', value: String(evening_booking_enabled) });
     if (night_booking_enabled !== undefined) updates.push({ key: 'night_booking_enabled', value: String(night_booking_enabled) });
 
     for (const { key, value } of updates) {
