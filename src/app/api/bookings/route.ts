@@ -109,10 +109,17 @@ export async function POST(request: Request) {
     });
 
     if (booking.bookingStatus === 'confirmed' && booking.whatsappNumber) {
-      const message = `Booking Confirmed ✅\n\nHello ${booking.playerName},\n\nYour turf booking for ${booking.sport} has been confirmed.\n\nDate: ${booking.bookingDate}\nTime: ${booking.slotStart} to ${booking.slotEnd}\n\nTotal Amount: ₹${booking.totalAmount}\nPaid Amount: ₹${booking.paidAmount}\nRemaining Amount: ₹${booking.remainingAmount}\n\nThank you for booking with Turf Things.`;
-      
-      const { sendWhatsAppMessage } = await import('@/lib/twilio');
-      const twilioRes = await sendWhatsAppMessage(booking.whatsappNumber, message);
+      const { sendWhatsAppTemplate } = await import('@/lib/twilio');
+      const twilioRes = await sendWhatsAppTemplate(booking.whatsappNumber, 'HXc41465ad7ed66084d60404b6c44b5848', {
+        '1': booking.playerName,
+        '2': booking.sport,
+        '3': booking.bookingDate,
+        '4': booking.slotStart,
+        '5': booking.slotEnd,
+        '6': booking.totalAmount.toString(),
+        '7': booking.paidAmount.toString(),
+        '8': booking.remainingAmount.toString()
+      });
       
       if (twilioRes.success) {
         booking = await prisma.booking.update({

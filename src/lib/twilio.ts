@@ -36,3 +36,33 @@ export const sendWhatsAppMessage = async (to: string, message: string) => {
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 };
+
+export const sendWhatsAppTemplate = async (to: string, contentSid: string, contentVariables: Record<string, string>) => {
+  if (!client) {
+    console.warn('Twilio client not initialized.');
+    return { success: false, error: 'Twilio not configured' };
+  }
+
+  try {
+    let cleanNumber = to.replace(/\s+/g, '');
+    if (/^\d{10}$/.test(cleanNumber)) {
+      cleanNumber = `+91${cleanNumber}`;
+    }
+    const toFormatted = cleanNumber.startsWith('whatsapp:') ? cleanNumber : `whatsapp:${cleanNumber}`;
+    const fromFormatted = twilioWhatsAppNumber.startsWith('whatsapp:') 
+      ? twilioWhatsAppNumber 
+      : `whatsapp:${twilioWhatsAppNumber}`;
+
+    const response = await client.messages.create({
+      contentSid,
+      contentVariables: JSON.stringify(contentVariables),
+      from: fromFormatted,
+      to: toFormatted,
+    });
+
+    return { success: true, messageId: response.sid, status: response.status };
+  } catch (error) {
+    console.error('Error sending WhatsApp template via Twilio:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+};
