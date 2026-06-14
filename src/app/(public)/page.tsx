@@ -413,7 +413,7 @@ export default function Home() {
                 { Icon: MapPin, title: "Near you always", desc: "Conveniently located across Pune" },
                 { Icon: ShieldCheck, title: "Verified grounds", desc: "Every turf inspected and rated by our team" },
                 { Icon: Trophy, title: "Cricket & Football", desc: "Two premium sports, one perfect ground" },
-                { Icon: Maximize, title: "Turf Dimension", desc: "Widget - 55 ft. Length - 95 ft." },
+                { Icon: Maximize, title: "Turf Dimension", desc: "Width - 55 ft. Length - 95 ft." },
               ].map(({ Icon, title, desc }, i) => (
                 <div
                   key={i}
@@ -710,11 +710,11 @@ export default function Home() {
       </section>
 
       {/* ══ LIVE BOOKING CALENDAR ═══════════════════════════ */}
-      <BookingSection 
+      <BookingSection
         disableMorning={!morningBookingEnabled}
         disableAfternoon={!afternoonBookingEnabled}
         disableEvening={!eveningBookingEnabled}
-        disableLateNight={!nightBookingEnabled} 
+        disableLateNight={!nightBookingEnabled}
       />
 
       {/* ══ INSTAGRAM CTA (Olive Green w/ Marquee) ════════════ */}
