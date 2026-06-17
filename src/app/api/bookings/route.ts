@@ -109,8 +109,9 @@ export async function POST(request: Request) {
     });
 
     if (booking.bookingStatus === 'confirmed' && booking.whatsappNumber) {
-      const { sendWhatsAppTemplate } = await import('@/lib/twilio');
-      const twilioRes = await sendWhatsAppTemplate(booking.whatsappNumber, 'HXc41465ad7ed66084d60404b6c44b5848', {
+      const { sendWhatsAppTemplate, sendWhatsAppMessage } = await import('@/lib/twilio');
+      const templateSid = process.env.TWILIO_CONFIRMATION_TEMPLATE_SID || 'HXc41465ad7ed66084d60404b6c44b5848';
+      let twilioRes = await sendWhatsAppTemplate(booking.whatsappNumber, templateSid, {
         '1': booking.playerName,
         '2': booking.sport,
         '3': booking.bookingDate,
@@ -120,6 +121,11 @@ export async function POST(request: Request) {
         '7': booking.paidAmount.toString(),
         '8': booking.remainingAmount.toString()
       });
+      
+      if (!twilioRes.success) {
+        const message = `Booking Confirmed ✅\n\nHello ${booking.playerName},\n\nYour turf booking for ${booking.sport} has been confirmed.\n\nDate: ${booking.bookingDate}\nTime: ${booking.slotStart} to ${booking.slotEnd}\n\nTotal Amount: ₹${booking.totalAmount}\nPaid Amount: ₹${booking.paidAmount}\nRemaining Amount: ₹${booking.remainingAmount}\n\nThank you for booking with Turf Things.\nThis number is only for Booking Confirmation. For any query or further enquiry please contact on 7030499191.`;
+        twilioRes = await sendWhatsAppMessage(booking.whatsappNumber, message);
+      }
       
       if (twilioRes.success) {
         booking = await prisma.booking.update({

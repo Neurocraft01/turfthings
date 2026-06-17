@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { sendWhatsAppMessage } from '@/lib/twilio';
+import { sendWhatsAppMessage, sendWhatsAppTemplate } from '@/lib/twilio';
 
 // Helper to convert HH:MM to minutes for easy comparison
 const timeToMinutes = (time: string) => {
@@ -146,9 +146,26 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     // Twilio Integration: Send confirmation if newly confirmed
     if (willConfirm && updatedBooking.whatsappNumber) {
-      const message = `Booking Confirmed ✅\n\nHello ${updatedBooking.playerName},\n\nYour turf booking for ${updatedBooking.sport || 'Football'} has been confirmed.\n\nDate: ${updatedBooking.bookingDate}\nTime: ${updatedBooking.slotStart} to ${updatedBooking.slotEnd}\n\nTotal Amount: ₹${updatedBooking.totalAmount}\nPaid Amount: ₹${updatedBooking.paidAmount}\nRemaining Amount: ₹${updatedBooking.remainingAmount}\n\nThank you for booking with Turf Things.`;
+      const templateSid = process.env.TWILIO_CONFIRMATION_TEMPLATE_SID;
+      let twilioRes;
       
-      const twilioRes = await sendWhatsAppMessage(updatedBooking.whatsappNumber, message);
+      if (templateSid) {
+        twilioRes = await sendWhatsAppTemplate(updatedBooking.whatsappNumber, templateSid, {
+          '1': updatedBooking.playerName,
+          '2': updatedBooking.sport || 'Football',
+          '3': updatedBooking.bookingDate,
+          '4': updatedBooking.slotStart,
+          '5': updatedBooking.slotEnd,
+          '6': updatedBooking.totalAmount.toString(),
+          '7': updatedBooking.paidAmount.toString(),
+          '8': updatedBooking.remainingAmount.toString()
+        });
+      }
+      
+      if (!twilioRes || !twilioRes.success) {
+        const message = `Booking Confirmed ✅\n\nHello ${updatedBooking.playerName},\n\nYour turf booking for ${updatedBooking.sport || 'Football'} has been confirmed.\n\nDate: ${updatedBooking.bookingDate}\nTime: ${updatedBooking.slotStart} to ${updatedBooking.slotEnd}\n\nTotal Amount: ₹${updatedBooking.totalAmount}\nPaid Amount: ₹${updatedBooking.paidAmount}\nRemaining Amount: ₹${updatedBooking.remainingAmount}\n\nThank you for booking with Turf Things.\nThis number is only for Booking Confirmation. For any query or further enquiry please contact on 7030499191.`;
+        twilioRes = await sendWhatsAppMessage(updatedBooking.whatsappNumber, message);
+      }
       
       if (twilioRes.success) {
         await prisma.booking.update({
