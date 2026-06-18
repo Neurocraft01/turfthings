@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CreditCard, Users } from "lucide-react";
+import { BarChart3, CreditCard, Search } from "lucide-react";
 
 export default function AnalyticsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -10,7 +10,7 @@ export default function AnalyticsLayout({ children }: { children: React.ReactNod
   const tabs = [
     { name: "Booking Analytics", href: "/admin/analytics/booking", icon: BarChart3 },
     { name: "Payment Analytics", href: "/admin/analytics/payment", icon: CreditCard },
-    { name: "Visitors Analysis", href: "/admin/analytics/visitors", icon: Users },
+    { name: "Booking Search", href: "/admin/analytics/visitors", icon: Search },
   ];
 
   return (
