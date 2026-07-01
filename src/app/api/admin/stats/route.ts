@@ -17,16 +17,20 @@ export async function GET() {
     const allBookings = await prisma.booking.findMany();
 
     // 1. Today's Bookings
-    const todayBookingsCount = activeBookings.filter(b => b.bookingDate === todayStr).length;
+    const todayBookingsCount = activeBookings.filter(b => typeof b.bookingDate === 'string' && b.bookingDate === todayStr).length;
 
     // 2. Monthly Revenue (for bookings in the current month)
-    const monthlyBookings = activeBookings.filter(b => b.bookingDate.startsWith(currentMonthStr));
+    const monthlyBookings = activeBookings.filter(b => typeof b.bookingDate === 'string' && b.bookingDate.startsWith(currentMonthStr));
     const expectedRevenue = monthlyBookings.reduce((sum, b) => sum + b.totalAmount, 0);
     const collectedAmount = monthlyBookings.reduce((sum, b) => sum + b.paidAmount, 0);
     const remainingAmount = monthlyBookings.reduce((sum, b) => sum + b.remainingAmount, 0);
 
     // 3. Active Players (unique player names)
-    const uniquePlayers = new Set(allBookings.map(b => b.playerName.trim().toLowerCase()));
+    const uniquePlayers = new Set(
+      allBookings
+        .map(b => b.playerName ? b.playerName.trim().toLowerCase() : '')
+        .filter(name => name !== '')
+    );
     const activePlayersCount = uniquePlayers.size;
 
     // 4. Pending Inquiries Count
@@ -79,7 +83,7 @@ export async function GET() {
       const monthKey = format(monthDate, 'yyyy-MM'); // e.g. "2026-06"
       const monthName = format(monthDate, 'MMM yyyy'); // e.g. "Jun 2026"
       
-      const monthBookings = activeBookings.filter(b => b.bookingDate.startsWith(monthKey));
+      const monthBookings = activeBookings.filter(b => typeof b.bookingDate === 'string' && b.bookingDate.startsWith(monthKey));
       const revenue = monthBookings.reduce((sum, b) => sum + b.paidAmount, 0);
       
       revenueData.push({

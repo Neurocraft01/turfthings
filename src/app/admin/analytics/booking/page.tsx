@@ -67,8 +67,16 @@ export default function BookingAnalytics() {
   // Peak day across all bookings
   const dayCount: Record<string, number> = {};
   activeBookings.forEach((b) => {
-    const d = format(parseISO(b.bookingDate), "EEEE");
-    dayCount[d] = (dayCount[d] || 0) + 1;
+    if (!b.bookingDate || typeof b.bookingDate !== "string") return;
+    try {
+      const parsed = parseISO(b.bookingDate);
+      if (!isNaN(parsed.getTime())) {
+        const d = format(parsed, "EEEE");
+        dayCount[d] = (dayCount[d] || 0) + 1;
+      }
+    } catch (e) {
+      console.error("Failed to parse booking date:", b.bookingDate, e);
+    }
   });
   const peakDay = Object.entries(dayCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
 
@@ -78,7 +86,7 @@ export default function BookingAnalytics() {
     d.setMonth(d.getMonth() - (5 - i));
     const monthKey = format(d, "yyyy-MM");
     const label = format(d, "MMM");
-    const monthBookings = activeBookings.filter((b) => b.bookingDate.startsWith(monthKey));
+    const monthBookings = activeBookings.filter((b) => typeof b.bookingDate === "string" && b.bookingDate.startsWith(monthKey));
     return {
       name: label,
       bookings: monthBookings.length,
@@ -113,7 +121,7 @@ export default function BookingAnalytics() {
           Last 7 Days — Bookings by Sport
         </h3>
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart data={last7} margin={{ top: 10, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="name" stroke="#6b7280" axisLine={false} tickLine={false} />
@@ -135,7 +143,7 @@ export default function BookingAnalytics() {
           Monthly Booking Trend (Last 6 Months)
         </h3>
         <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <LineChart data={monthlyData} margin={{ top: 10, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="name" stroke="#6b7280" axisLine={false} tickLine={false} />

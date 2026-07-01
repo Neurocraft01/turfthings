@@ -106,7 +106,7 @@ export default function PaymentAnalytics() {
             <div className="flex items-center justify-center h-60 text-gray-400 text-sm">No payment data yet</div>
           ) : (
             <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <PieChart>
                   <Pie
                     data={distributionData}
@@ -183,7 +183,7 @@ export default function PaymentAnalytics() {
           Last 14 Days — Revenue Trend
         </h3>
         <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <LineChart data={revenueTrend} margin={{ top: 10, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="name" stroke="#6b7280" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
