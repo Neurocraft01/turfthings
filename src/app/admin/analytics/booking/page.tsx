@@ -121,7 +121,7 @@ export default function BookingAnalytics() {
           Last 7 Days — Bookings by Sport
         </h3>
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+          <ResponsiveContainer width="100%" height={288} minWidth={0}>
             <BarChart data={last7} margin={{ top: 10, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="name" stroke="#6b7280" axisLine={false} tickLine={false} />
@@ -143,7 +143,7 @@ export default function BookingAnalytics() {
           Monthly Booking Trend (Last 6 Months)
         </h3>
         <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+          <ResponsiveContainer width="100%" height={256} minWidth={0}>
             <LineChart data={monthlyData} margin={{ top: 10, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="name" stroke="#6b7280" axisLine={false} tickLine={false} />

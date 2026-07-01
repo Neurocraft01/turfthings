@@ -102,7 +102,7 @@ export default function Dashboard() {
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm">
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-6">Weekly Bookings (Volume)</h2>
           <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height={288} minWidth={0}>
               <BarChart data={charts.bookingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fill: '#6b7280' }} axisLine={false} tickLine={false} />
@@ -122,7 +122,7 @@ export default function Dashboard() {
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm">
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-6">Monthly Revenue (Last 6 Months)</h2>
           <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height={288} minWidth={0}>
               <AreaChart data={charts.revenueData} margin={{ top: 10, right: 10, left: 15, bottom: 0 }}>
                 <defs>
                   <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
@@ -163,7 +163,7 @@ export default function Dashboard() {
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm flex flex-col items-center">
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-2 w-full text-left">Sport Popularity</h2>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height={256} minWidth={0}>
               <PieChart>
                 <Pie
                   data={charts.sportsPopularity}
@@ -192,7 +192,7 @@ export default function Dashboard() {
         <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm flex flex-col items-center">
           <h2 className="font-display text-xl text-foreground uppercase tracking-wider mb-2 w-full text-left">Payment Statuses</h2>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height={256} minWidth={0}>
               <PieChart>
                 <Pie
                   data={charts.paymentMethods}
